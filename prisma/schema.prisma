@@ -1,0 +1,184 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Box {
+  C_Box           Int       @id(map: "PK__Box__E2A25028EA6970C3") @default(autoincrement())
+  F_OpenDateTime  DateTime  @db.DateTime
+  F_CloseDateTime DateTime? @db.DateTime
+  M_OpenBox       Decimal   @db.Decimal(10, 2)
+  M_CloseBox      Decimal?  @db.Decimal(10, 2)
+  M_TotalSales    Decimal?  @db.Decimal(10, 2)
+  M_TotalSinpe    Decimal?  @db.Decimal(10, 2)
+  M_TotalCash     Decimal?  @db.Decimal(10, 2)
+}
+
+model Category {
+  C_Category          Int                @id(map: "PK_Category") @db.TinyInt
+  D_Category_Name     String             @db.VarChar(30)
+  C_InactivationState Int?               @db.TinyInt
+  InactivationState   InactivationState? @relation(fields: [C_InactivationState], references: [C_InactivationState], onDelete: NoAction, onUpdate: NoAction, map: "FK__Category__C_Inac__2022C2A6")
+  Products            Products[]
+}
+
+model InactivationState {
+  C_InactivationState Int           @id(map: "PK_InactivationState") @db.TinyInt
+  D_InactivationState String        @db.VarChar(20)
+  Category            Category[]
+  Ingredients         Ingredients[]
+  Order               Order[]
+  Products            Products[]
+}
+
+model Ingredients {
+  C_Ingredients        Int                    @id(map: "PK_Ingredients")
+  C_Unit_Measurement   Int                    @db.TinyInt
+  D_Ingredients_Name   String                 @db.VarChar(50)
+  Q_Quantity           Decimal                @db.Decimal(10, 4)
+  C_InactivationState  Int?                   @db.TinyInt
+  InactivationState    InactivationState?     @relation(fields: [C_InactivationState], references: [C_InactivationState], onDelete: NoAction, onUpdate: NoAction, map: "FK__Ingredien__C_Ina__1F2E9E6D")
+  Unit_Measurement     Unit_Measurement       @relation(fields: [C_Unit_Measurement], references: [C_Unit_Measurement], onUpdate: NoAction, map: "FK_Ingredients_Unit_Measurement")
+  Ingredients_Products Ingredients_Products[]
+  Order_Ingredients    Order_Ingredients[]
+  Products_Ingredients Products_Ingredients[]
+}
+
+model Ingredients_Products {
+  C_Products            Int
+  C_Order_Detail        Int
+  C_Ingredients         Int
+  IsUsed                Boolean
+  C_IngredientsProducts BigInt      @id(map: "PK__Ingredie__37230888BABD6D1C") @default(autoincrement())
+  Ingredients           Ingredients @relation(fields: [C_Ingredients], references: [C_Ingredients], onUpdate: NoAction, map: "FK_Ingredients_Products_Ingredients")
+  OrderDetail           OrderDetail @relation(fields: [C_Order_Detail], references: [C_Order_Detail], onUpdate: NoAction, map: "FK_Ingredients_Products_OrderDetail")
+  Products              Products    @relation(fields: [C_Products], references: [C_Products], onUpdate: NoAction, map: "FK_Ingredients_Products_Products")
+}
+
+model Order {
+  C_Order             BigInt              @id(map: "PK_Order") @default(autoincrement())
+  N_Order_Number      Int
+  C_State_Type        Int                 @db.TinyInt
+  M_Total_price       Decimal             @db.Decimal(10, 4)
+  F_Order_Date        DateTime            @default(now(), map: "DF__Order__F_Order_D__725BF7F6") @db.Date
+  C_Payment_Method    Int?                @db.TinyInt
+  F_Payment_Date      DateTime?           @db.Date
+  D_NameClient        String?             @db.VarChar(60)
+  C_OrderType         Int?                @db.TinyInt
+  C_InactivationState Int?                @db.TinyInt
+  InactivationState   InactivationState?  @relation(fields: [C_InactivationState], references: [C_InactivationState], onDelete: NoAction, onUpdate: NoAction, map: "FK__Order__C_Inactiv__2116E6DF")
+  PaymentMethod       PaymentMethod?      @relation(fields: [C_Payment_Method], references: [C_Payment_Method], onDelete: NoAction, onUpdate: NoAction, map: "FK__Order__C_Payment__0D0FEE32")
+  OrderType           OrderType?          @relation(fields: [C_OrderType], references: [C_OrderType], onDelete: NoAction, onUpdate: NoAction, map: "FK_Order_OrderType")
+  StateType           StateType           @relation(fields: [C_State_Type], references: [C_State_Type], onUpdate: NoAction, map: "FK_Order_StateType")
+  Order_Ingredients   Order_Ingredients[]
+  OrderDetail         OrderDetail[]
+  Sales               Sales[]
+}
+
+model Order_Ingredients {
+  C_Order        BigInt?
+  C_Order_Detail Int
+  C_Products     Int?
+  C_Ingredients  Int
+  IsUsed         Boolean?    @default(true, map: "DF__Order_Ing__IsUse__79FD19BE")
+  Ingredients    Ingredients @relation(fields: [C_Ingredients], references: [C_Ingredients], onUpdate: NoAction, map: "FK__Order_Ing__C_Ing__7DCDAAA2")
+  Order          Order?      @relation(fields: [C_Order], references: [C_Order], onDelete: NoAction, onUpdate: NoAction, map: "FK__Order_Ing__C_Ord__7AF13DF7")
+  OrderDetail    OrderDetail @relation(fields: [C_Order_Detail], references: [C_Order_Detail], onUpdate: NoAction, map: "FK__Order_Ing__C_Ord__7BE56230")
+  Products       Products?   @relation(fields: [C_Products], references: [C_Products], onDelete: NoAction, onUpdate: NoAction, map: "FK__Order_Ing__C_Pro__7CD98669")
+
+  @@id([C_Order_Detail, C_Ingredients], map: "PK__Order_In__A9D5D8CD83EEA9DC")
+}
+
+model OrderDetail {
+  C_Order                BigInt
+  C_Order_Detail         Int                    @id(map: "PK_OrderDetail")
+  C_Products             Int
+  Q_Line_Detail_Quantity Int
+  Ingredients_Products   Ingredients_Products[]
+  Order_Ingredients      Order_Ingredients[]
+  Order                  Order                  @relation(fields: [C_Order], references: [C_Order], onUpdate: NoAction, map: "FK_OrderDetail_Order")
+  Products               Products               @relation(fields: [C_Products], references: [C_Products], onUpdate: NoAction, map: "FK_OrderDetail_Products")
+}
+
+model OrderType {
+  C_OrderType Int     @id(map: "PK_OrderType") @db.TinyInt
+  D_OrderType String  @db.VarChar(30)
+  Order       Order[]
+  Sales       Sales[]
+}
+
+model PaymentMethod {
+  C_Payment_Method      Int     @id(map: "PK_PaymentMethod") @db.TinyInt
+  D_Payment_Method_Name String  @db.VarChar(20)
+  Order                 Order[]
+  Sales                 Sales[]
+}
+
+model Products {
+  C_Products           Int                    @id(map: "PK_Products")
+  C_Category           Int                    @db.TinyInt
+  D_Name               String                 @db.NVarChar(50)
+  D_Description        String                 @db.VarChar(50)
+  N_Quantity           Int
+  M_Price              Decimal                @db.Decimal(10, 4)
+  C_InactivationState  Int?                   @db.TinyInt
+  Ingredients_Products Ingredients_Products[]
+  Order_Ingredients    Order_Ingredients[]
+  OrderDetail          OrderDetail[]
+  InactivationState    InactivationState?     @relation(fields: [C_InactivationState], references: [C_InactivationState], onDelete: NoAction, onUpdate: NoAction, map: "FK__Products__C_Inac__1E3A7A34")
+  Category             Category               @relation(fields: [C_Category], references: [C_Category], onUpdate: NoAction, map: "FK_Products_Category")
+  Products_Ingredients Products_Ingredients[]
+}
+
+model Products_Ingredients {
+  C_Products         Int
+  C_Ingredients      Int
+  C_Unit_Measurement Int              @db.TinyInt
+  Q_ConsumptionUnit  Decimal          @db.Decimal(10, 4)
+  Ingredients        Ingredients      @relation(fields: [C_Ingredients], references: [C_Ingredients], onUpdate: NoAction, map: "FK_Products_Ingredients_Ingredients")
+  Products           Products         @relation(fields: [C_Products], references: [C_Products], onUpdate: NoAction, map: "FK_Products_Ingredients_Products")
+  Unit_Measurement   Unit_Measurement @relation(fields: [C_Unit_Measurement], references: [C_Unit_Measurement], onUpdate: NoAction, map: "FK_Products_Ingredients_Unit_Measurement")
+
+  @@id([C_Products, C_Ingredients, C_Unit_Measurement], map: "PK_Products_Ingredients")
+}
+
+model Sales {
+  C_Sales          BigInt         @id(map: "PK__Sales__DA7363CB94CBADDE") @default(autoincrement())
+  C_Order          BigInt
+  F_Bill_Date      DateTime       @default(now(), map: "DF__Sales__F_Bill_Da__7073AF84") @db.DateTime
+  M_Total_Price    Decimal        @db.Decimal(10, 4)
+  D_NameClient     String?        @db.VarChar(100)
+  C_Payment_Method Int?           @db.TinyInt
+  C_OrderType      Int?           @db.TinyInt
+  OrderType        OrderType?     @relation(fields: [C_OrderType], references: [C_OrderType], onDelete: NoAction, onUpdate: NoAction, map: "FK__Sales__C_OrderTy__24E777C3")
+  PaymentMethod    PaymentMethod? @relation(fields: [C_Payment_Method], references: [C_Payment_Method], onDelete: NoAction, onUpdate: NoAction, map: "FK__Sales__C_Payment__23F3538A")
+  Order            Order          @relation(fields: [C_Order], references: [C_Order], onUpdate: NoAction, map: "FK_Sales_Order")
+}
+
+model StateType {
+  C_State_Type Int     @id(map: "PK_StateType") @db.TinyInt
+  D_State_Type String  @db.VarChar(20)
+  Order        Order[]
+}
+
+model sysdiagrams {
+  name         String @db.NVarChar(128)
+  principal_id Int
+  diagram_id   Int    @id(map: "PK__sysdiagr__C2B05B61150EDB7E") @default(autoincrement())
+  version      Int?
+  definition   Bytes?
+
+  @@unique([principal_id, name], map: "UK_principal_name")
+}
+
+model Unit_Measurement {
+  C_Unit_Measurement      Int                    @id(map: "PK_Unit_Measurement") @db.TinyInt
+  D_Unit_Measurement_Name String                 @db.VarChar(20)
+  Ingredients             Ingredients[]
+  Products_Ingredients    Products_Ingredients[]
+}
