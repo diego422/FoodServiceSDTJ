@@ -1,6 +1,7 @@
 "use client";
 
 import DataTable, { Column } from "./DataTable";
+import Link from "next/link";
 
 type Producto = {
   codigoProducto: number;
@@ -27,13 +28,13 @@ export default function ProductosTable({ data }: Props) {
       key: "modificar",
       label: "Modificar",
       render: (_, row) => (
-        <button
-          onClick={() => alert(`Editar producto: ${row.codigoProducto}`)}
+        <Link
+          href={`/dashboard/productos/inicio/${row.codigoProducto}/edit`}
           className="p-2 rounded border border-gray-300 hover:bg-green-100"
           title="Editar"
         >
           ✏️
-        </button>
+        </Link>
       ),
     },
     {
