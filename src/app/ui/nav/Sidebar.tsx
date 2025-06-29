@@ -8,7 +8,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 const menuItems = [
   { label: "Gestión Categorias", href: "/dashboard/categorias" },
   { label: "Gestión Productos", href: "/dashboard/productos/inicio" },
-  { label: "Gestión Ingredientes", href: "/dashboard/cierre-inventario" },
+  { label: "Gestión Ingredientes", href: "/dashboard/ingredientes/inicio" },
   { label: "Gestión Pedidos", href: "/dashboard/proveedores" },
   { label: "Gestión Reportes", href: "/dashboard/usuarios" },
   { label: "Cierre de caja", href: "/dashboard/roles" },

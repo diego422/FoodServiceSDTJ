@@ -183,3 +183,78 @@ export async function fetchInactivationStates() {
     },
   });
 }
+
+/* -------------------------------
+   CREAR INGREDIENTE
+-------------------------------- */
+export async function createIngredients(formData: FormData) {
+  const IngredientCode = parseInt(formData.get("codigoIngrediente")?.toString() || "0");
+  const IngredientName = formData.get("nombre")?.toString() || "";
+  const UnitMeasurementeName = formData.get("nombreUnidadMedida")?.toString() || "";
+  const Quantity = parseInt(formData.get("cantidad")?.toString() || "0");
+  const StateName = formData.get("nombreEstado")?.toString() || "";
+
+  if (!IngredientCode || !IngredientName || !UnitMeasurementeName || !StateName) {
+    console.error("Faltan datos obligatorios.");
+    return;
+  }
+
+  // Buscar categoría por nombre
+  const unitMeasurement = await prisma.unit_Measurement.findFirst({
+    where: {
+      D_Unit_Measurement_Name: UnitMeasurementeName,
+    },
+  });
+
+  if (!unitMeasurement) {
+    console.error("No existe la unidad de medidad indicada.");
+    throw new Error("No existe la unidad de medidad indicada.");
+  }
+
+  // Buscar estado por nombre
+  const state = await prisma.inactivationState.findFirst({
+    where: {
+      D_InactivationState: StateName,
+    },
+  });
+
+  if (!state) {
+    console.error("No existe el estado indicado.");
+    throw new Error("No existe el estado indicado.");
+  }
+
+  // Verificar si ya existe
+  const existing = await prisma.ingredients.findUnique({
+    where: { C_Ingredients:  IngredientCode},
+  });
+
+  if (existing) {
+    console.error("Ya existe un ingrediente con ese código.");
+    throw new Error("Ya existe un ingrediente con ese código.");
+  }
+
+  await prisma.ingredients.create({
+    data: {
+      C_Ingredients: IngredientCode,
+      D_Ingredients_Name: IngredientName,
+      Q_Quantity: Quantity,
+      C_Unit_Measurement: unitMeasurement.C_Unit_Measurement,
+      C_InactivationState: state.C_InactivationState,
+    },
+  });
+
+  revalidatePath("/dashboard/ingredientes/inicio");
+  redirect("/dashboard/ingredientes/inicio");
+}
+
+/* -------------------------------
+   CONSULTAR TODAS LAS UNIDADES DE MEDIDA
+-------------------------------- */
+export async function fetchUnidadMedidad() {
+  return await prisma.unit_Measurement.findMany({
+    select: {
+      C_Unit_Measurement: true,
+      D_Unit_Measurement_Name: true,
+    },
+  });
+}
