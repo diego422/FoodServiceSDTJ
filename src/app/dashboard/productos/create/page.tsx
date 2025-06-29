@@ -1,8 +1,10 @@
-"use client";
+import { createProducto, fetchCategorias, fetchInactivationStates } from "@/lib/actions";
 
-import { createProducto } from "@/lib/actions";
+export default async function Page() {
+  
+  const categorias = await fetchCategorias();
+  const estados = await fetchInactivationStates();
 
-export default function Page() {
   return (
     <form
       action={createProducto}
@@ -39,11 +41,18 @@ export default function Page() {
 
       <div className="mb-4">
         <label className="block font-semibold">Categoría:</label>
-        <input
-          type="number"
-          name="codigoCategoria"
+        <select
+          name="nombreCategoria"
           className="w-full p-2 border rounded"
-        />
+          required
+        >
+          <option value="">-- Seleccione una categoría --</option>
+          {categorias.map((cat) => (
+            <option key={cat.C_Category} value={cat.D_Category_Name}>
+              {cat.D_Category_Name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="mb-4">
@@ -69,12 +78,21 @@ export default function Page() {
 
       <div className="mb-4">
         <label className="block font-semibold">Estado:</label>
-        <input
-          type="number"
-          name="estado"
+        <select
+          name="nombreEstado"
           className="w-full p-2 border rounded"
-          defaultValue={1}
-        />
+          required
+        >
+          <option value="">-- Seleccione un estado --</option>
+          {estados.map((estado) => (
+            <option
+              key={estado.C_InactivationState}
+              value={estado.D_InactivationState}
+            >
+              {estado.D_InactivationState}
+            </option>
+          ))}
+        </select>
       </div>
 
       <button

@@ -5,7 +5,7 @@ import Link from "next/link";
 
 type Producto = {
   codigoProducto: number;
-  codigoCategoria: number;
+  nombreCategoria: string; // ✅ nuevo campo
   nombre: string;
   descripcion: string;
   cantidad: number;
@@ -19,7 +19,7 @@ interface Props {
 export default function ProductosTable({ data }: Props) {
   const columns: Column<Producto & { modificar: string; inactivar: string }>[] = [
     { key: "codigoProducto", label: "Código Producto" },
-    { key: "codigoCategoria", label: "Código Categoría" },
+    { key: "nombreCategoria", label: "Categoría" }, // ✅ mostrar nombre
     { key: "nombre", label: "Nombre del producto" },
     { key: "descripcion", label: "Descripción" },
     { key: "cantidad", label: "Cantidad" },

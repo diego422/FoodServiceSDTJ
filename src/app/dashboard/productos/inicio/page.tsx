@@ -16,50 +16,65 @@ export default async function ProductosPage({ searchParams }: Props) {
   const currentPage = Number(searchParams?.page) || 1;
   const pageSize = 5;
 
-  const total = await prisma.products.count({
-    where: {
-      OR: [
-        {
-          D_Name: {
-            contains: query,
+  /**
+   * Filtrado:
+   * - por nombre del producto
+   * - o por nombre de la categoría
+   */
+
+  // Filtrar productos
+  const [total, productos] = await Promise.all([
+    prisma.products.count({
+      where: {
+        OR: [
+          {
+            D_Name: {
+              contains: query,
+            },
           },
-        },
-        {
-          C_Category: {
-            equals: query === "" ? undefined : Number(query) || undefined,
+          {
+            Category: {
+              D_Category_Name: {
+                contains: query,
+              },
+            },
           },
-        },
-      ],
-    },
-  });
+        ],
+      },
+    }),
+    prisma.products.findMany({
+      where: {
+        OR: [
+          {
+            D_Name: {
+              contains: query,
+            },
+          },
+          {
+            Category: {
+              D_Category_Name: {
+                contains: query,
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        Category: true, // ✅ incluir datos de la categoría
+      },
+      orderBy: {
+        C_Products: "asc",
+      },
+      skip: (currentPage - 1) * pageSize,
+      take: pageSize,
+    }),
+  ]);
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
-  const productos = await prisma.products.findMany({
-    where: {
-      OR: [
-        {
-          D_Name: {
-            contains: query,
-          },
-        },
-        {
-          C_Category: {
-            equals: query === "" ? undefined : Number(query) || undefined,
-          },
-        },
-      ],
-    },
-    orderBy: {
-      C_Products: "asc",
-    },
-    skip: (currentPage - 1) * pageSize,
-    take: pageSize,
-  });
-
   const data = productos.map((p) => ({
     codigoProducto: p.C_Products,
-    codigoCategoria: p.C_Category,
+    nombreCategoria: p.Category?.D_Category_Name || "Sin categoría",
     nombre: p.D_Name,
     descripcion: p.D_Description,
     cantidad: p.N_Quantity,
