@@ -258,3 +258,86 @@ export async function fetchUnidadMedidad() {
     },
   });
 }
+
+/* -------------------------------
+   CREAR CATEGORÍA
+-------------------------------- */
+export async function createCategoria(formData: FormData) {
+  const codigoCategoria = parseInt(formData.get("codigoCategoria")?.toString() || "0");
+  const nombre = formData.get("nombre")?.toString() || "";
+
+  if (!codigoCategoria || !nombre) {
+    console.error("Faltan datos obligatorios para la categoría.");
+    return;
+  }
+
+  // Verificar si ya existe
+  const existing = await prisma.category.findUnique({
+    where: { C_Category: codigoCategoria },
+  });
+
+  if (existing) {
+    console.error("Ya existe una categoría con ese código.");
+    throw new Error("Ya existe una categoría con ese código.");
+  }
+
+  await prisma.category.create({
+    data: {
+      C_Category: codigoCategoria,
+      D_Category_Name: nombre,
+    },
+  });
+
+  revalidatePath("/dashboard/categorias/inicio");
+  redirect("/dashboard/categorias/inicio");
+}
+
+/* -------------------------------
+   CONSULTAR TODAS LAS CATEGORÍAS
+-------------------------------- */
+export async function fetchCategoriasAll() {
+  return await prisma.category.findMany({
+    select: {
+      C_Category: true,
+      D_Category_Name: true,
+    },
+  });
+}
+
+/* -------------------------------
+   CONSULTAR CATEGORÍA POR ID
+-------------------------------- */
+export async function fetchCategoriaById(codigoCategoria: number) {
+  return await prisma.category.findUnique({
+    where: {
+      C_Category: codigoCategoria,
+    },
+  });
+}
+
+/* -------------------------------
+   ACTUALIZAR CATEGORÍA
+-------------------------------- */
+export async function updateCategoria(
+  codigoCategoria: number,
+  formData: FormData
+) {
+  const nombre = formData.get("nombre")?.toString() || "";
+
+  if (!nombre) {
+    console.error("Faltan datos obligatorios para actualizar la categoría.");
+    return;
+  }
+
+  await prisma.category.update({
+    where: {
+      C_Category: codigoCategoria,
+    },
+    data: {
+      D_Category_Name: nombre,
+    },
+  });
+
+  revalidatePath("/dashboard/categorias/inicio");
+  redirect("/dashboard/categorias/inicio");
+}
