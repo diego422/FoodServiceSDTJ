@@ -78,7 +78,7 @@ export default async function IngredientesPage({ searchParams }: Props) {
     codigoIngrediente: i.C_Ingredients,
     nombreUnidadMedida: i.Unit_Measurement?.D_Unit_Measurement_Name,
     nombre: i.D_Ingredients_Name,
-    cantidad: i.Q_Quantity.toNumber(),
+    cantidad: i.Q_Quantity.toNumber().toFixed(4)??"0.00",
   }));
 
   return (

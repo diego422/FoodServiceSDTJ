@@ -1,5 +1,15 @@
-import { fetchProductoById, updateProducto } from "@/lib/actions";
+import { fetchProductoById, updateProducto, fetchIngredientsAll, fetchCategorias } from "@/lib/actions";
 import { notFound } from "next/navigation";
+import IngredientesField from "@/app/ui/components/ingredientField";
+
+
+const ingredientes = await fetchIngredientsAll();
+const listaDeIngredientes = ingredientes.map((i) => ({
+  id: i.C_Ingredients,
+  nombre: `${i.D_Ingredients_Name} (${i.Unit_Measurement?.D_Unit_Measurement_Name})`,
+}));
+
+const categorias = await fetchCategorias();
 
 export default async function EditProductoPage({
   params,
@@ -66,6 +76,23 @@ export default async function EditProductoPage({
           />
         </div>
 
+        {/*Categoria*/}
+      <div className="mb-4">
+        <label className="block font-semibold">Categoría:</label>
+        <select
+          name="nombreCategoria"
+          className="w-full p-2 border rounded"
+          required
+        >
+          <option value="">-- Seleccione una categoría --</option>
+          {categorias.map((cat) => (
+            <option key={cat.C_Category} value={cat.D_Category_Name}>
+              {cat.D_Category_Name}
+            </option>
+          ))}
+        </select>
+      </div>
+
         {/* Cantidad */}
         <div className="mb-4">
           <label className="block mb-1 font-semibold">Cantidad:</label>
@@ -76,6 +103,17 @@ export default async function EditProductoPage({
             className="border rounded w-full px-3 py-2"
           />
         </div>
+
+        <input type="hidden" name="ingredientesJSON" id="ingredientesJSON" />
+
+        <IngredientesField
+          ingredientesDisponibles={listaDeIngredientes}
+          ingredientesSeleccionados={producto.Products_Ingredients.map((pi) => ({
+            id: pi.C_Ingredients,
+            nombre: `${pi.Ingredients.D_Ingredients_Name} (${pi.Ingredients.Unit_Measurement?.D_Unit_Measurement_Name})`,
+            cantidadUso: Number(pi.Q_ConsumptionUnit),
+          }))}
+        />
 
         <button
           type="submit"

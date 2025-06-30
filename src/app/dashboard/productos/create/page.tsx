@@ -1,9 +1,17 @@
-import { createProducto, fetchCategorias, fetchInactivationStates } from "@/lib/actions";
+import { createProducto, fetchCategorias, fetchInactivationStates, fetchIngredientsAll } from "@/lib/actions";
+import IngredientesField from "@/app/ui/components/ingredientField";
 
 export default async function Page() {
-  
+
   const categorias = await fetchCategorias();
   const estados = await fetchInactivationStates();
+  const ingredientes = await fetchIngredientsAll();
+  // const [ingredientesAsociados, setIngredientesAsociados] = useState<SelectedIngrediente[]>([]);
+
+  const listaDeIngredientes = ingredientes.map((i) => ({
+    id: i.C_Ingredients,
+    nombre: `${i.D_Ingredients_Name} (${i.Unit_Measurement?.D_Unit_Measurement_Name})`,
+  }));
 
   return (
     <form
@@ -94,7 +102,7 @@ export default async function Page() {
           ))}
         </select>
       </div>
-
+      <IngredientesField ingredientesDisponibles={listaDeIngredientes} />
       <button
         type="submit"
         className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded float-right"

@@ -2,14 +2,13 @@
 
 import DataTable, { Column } from "./DataTable";
 import Link from "next/link";
-import { Decimal } from "@prisma/client/runtime/library";
 
   type Ingrediente = {
 
     codigoIngrediente: number,
     nombreUnidadMedida: string,
     nombre: string,
-    cantidad: Decimal,
+    cantidad: string,
 };
 
 interface Props {
@@ -19,7 +18,7 @@ interface Props {
 export default function ingredienteTable({ data }: Props) {
     const columns: Column<Ingrediente & { modificar: string; inactivar: string }>[] = [
     { key: "codigoIngrediente", label: "Código Ingrediente" },
-    { key: "nombreUnidadMedida", label: "Unidad de medida" }, // ✅ mostrar nombre
+    { key: "nombreUnidadMedida", label: "Unidad de medida" }, 
     { key: "nombre", label: "Nombre del ingrediente" },
     { key: "cantidad", label: "Cantidad" },
     {

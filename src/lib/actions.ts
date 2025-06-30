@@ -16,7 +16,16 @@ export async function createProducto(formData: FormData) {
   const precio = parseFloat(formData.get("precio")?.toString() || "0.00");
   const cantidad = parseInt(formData.get("cantidad")?.toString() || "0");
   const nombreEstado = formData.get("nombreEstado")?.toString() || "";
+  //---------------------------------------------------------------
+  const ingredientesJSON = formData.get("ingredientesJSON")?.toString() || "[]";
+  let ingredientes: { id: number; cantidadUso: number }[] = [];
 
+  try {
+    ingredientes = JSON.parse(ingredientesJSON);
+  } catch (err) {
+    console.error("Error al parsear ingredientesJSON", err);
+  }
+//-------------------------------------------------------------------
   if (!codigoProducto || !nombre || !nombreCategoria || !nombreEstado) {
     console.error("Faltan datos obligatorios.");
     return;
@@ -55,7 +64,7 @@ export async function createProducto(formData: FormData) {
     console.error("Ya existe un producto con ese código.");
     throw new Error("Ya existe un producto con ese código.");
   }
-
+  //-----------------------------------------------------------------
   await prisma.products.create({
     data: {
       C_Products: codigoProducto,
@@ -68,6 +77,19 @@ export async function createProducto(formData: FormData) {
     },
   });
 
+  await Promise.all(
+  ingredientes.map((ing) =>
+    prisma.products_Ingredients.create({
+      data: {
+        C_Products: codigoProducto,
+        C_Ingredients: ing.id,
+        C_Unit_Measurement: 1,
+        Q_ConsumptionUnit: new Decimal(ing.cantidadUso),
+      },
+    })
+  )
+);
+  //-----------------------------------------------------------------
   revalidatePath("/dashboard/productos/inicio");
   redirect("/dashboard/productos/inicio");
 }
@@ -87,14 +109,22 @@ export async function fetchProductos() {
 /* -------------------------------
    CONSULTAR PRODUCTO POR ID
 -------------------------------- */
+
 export async function fetchProductoById(codigoProducto: number) {
   return await prisma.products.findUnique({
-    where: {
-      C_Products: codigoProducto,
-    },
+    where: { C_Products: codigoProducto },
     include: {
       Category: true,
       InactivationState: true,
+      Products_Ingredients: {
+        include: {
+          Ingredients: {
+            include: {
+              Unit_Measurement: true,
+            },
+          },
+        },
+      },
     },
   });
 }
@@ -111,9 +141,17 @@ export async function updateProducto(
   const nombreCategoria = formData.get("nombreCategoria")?.toString() || "";
   const precio = parseFloat(formData.get("precio")?.toString() || "0.00");
   const cantidad = parseInt(formData.get("cantidad")?.toString() || "0");
-  const nombreEstado = formData.get("nombreEstado")?.toString() || "";
+  //-----------------------------------------------------------------
+  const ingredientesJSON = formData.get("ingredientesJSON")?.toString() || "[]";
+let ingredientes: { id: number; cantidadUso: number }[] = [];
 
-  if (!nombre || !nombreCategoria || !nombreEstado) {
+try {
+  ingredientes = JSON.parse(ingredientesJSON);
+} catch (err) {
+  console.error("Error al parsear ingredientesJSON", err);
+}
+  //-----------------------------------------------------------------
+  if (!nombre || !nombreCategoria ) {
     console.error("Faltan datos obligatorios para actualizar.");
     return;
   }
@@ -130,18 +168,6 @@ export async function updateProducto(
     throw new Error("No existe la categoría indicada.");
   }
 
-  // Buscar estado por nombre
-  const estado = await prisma.inactivationState.findFirst({
-    where: {
-      D_InactivationState: nombreEstado,
-    },
-  });
-
-  if (!estado) {
-    console.error("No existe el estado indicado.");
-    throw new Error("No existe el estado indicado.");
-  }
-
   await prisma.products.update({
     where: {
       C_Products: codigoProducto,
@@ -152,9 +178,28 @@ export async function updateProducto(
       C_Category: categoria.C_Category,
       M_Price: new Decimal(precio),
       N_Quantity: cantidad,
-      C_InactivationState: estado.C_InactivationState,
     },
   });
+  //-----------------------------------------------------------------
+  await prisma.products_Ingredients.deleteMany({
+  where: {
+    C_Products: codigoProducto,
+  },
+});
+
+await Promise.all(
+  ingredientes.map((ing) =>
+    prisma.products_Ingredients.create({
+      data: {
+        C_Products: codigoProducto,
+        C_Ingredients: ing.id,
+        C_Unit_Measurement: 1,
+        Q_ConsumptionUnit: new Decimal(ing.cantidadUso),
+      },
+    })
+  )
+);
+  //-----------------------------------------------------------------
 
   revalidatePath("/dashboard/productos/inicio");
   redirect("/dashboard/productos/inicio");
@@ -225,7 +270,7 @@ export async function createIngredients(formData: FormData) {
 
   // Verificar si ya existe
   const existing = await prisma.ingredients.findUnique({
-    where: { C_Ingredients:  IngredientCode},
+    where: { C_Ingredients: IngredientCode },
   });
 
   if (existing) {
@@ -340,4 +385,23 @@ export async function updateCategoria(
 
   revalidatePath("/dashboard/categorias/inicio");
   redirect("/dashboard/categorias/inicio");
+}
+
+
+/* -------------------------------
+   CONSULTAR TODOS LOS INGREDIENTES
+-------------------------------- */
+export async function fetchIngredientsAll() {
+  return await prisma.ingredients.findMany({
+    where: {
+      C_InactivationState: 1,
+    },
+    include: {
+      Unit_Measurement: {
+        select: {
+          D_Unit_Measurement_Name: true,
+        },
+      },
+    },
+  });
 }
