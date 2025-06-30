@@ -10,7 +10,7 @@ const menuItems = [
   { label: "Gestión Productos", href: "/dashboard/productos/inicio" },
   { label: "Gestión Ingredientes", href: "/dashboard/ingredientes/inicio" },
   { label: "Gestión Pedidos", href: "/dashboard/proveedores" },
-  { label: "Gestión Reportes", href: "/dashboard/usuarios" },
+  { label: "Gestión Reportes", href: "/dashboard/Reporte/inicio" },
   { label: "Cierre de caja", href: "/dashboard/roles" },
 ];
 
