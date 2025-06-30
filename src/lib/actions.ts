@@ -363,28 +363,21 @@ export async function fetchCategoriaById(codigoCategoria: number) {
 /* -------------------------------
    ACTUALIZAR CATEGORÍA
 -------------------------------- */
-export async function updateCategoria(
-  codigoCategoria: number,
-  formData: FormData
-) {
-  const nombre = formData.get("nombre")?.toString() || "";
-
-  if (!nombre) {
-    console.error("Faltan datos obligatorios para actualizar la categoría.");
+/* -------------------------------
+   ACTUALIZAR CATEGORÍA
+-------------------------------- */
+export async function updateCategoria(codigoCategoria: number, nuevoNombre: string) {
+  if (!nuevoNombre) {
+    console.error("El nombre de la categoría no puede estar vacío.");
     return;
   }
 
   await prisma.category.update({
-    where: {
-      C_Category: codigoCategoria,
-    },
-    data: {
-      D_Category_Name: nombre,
-    },
+    where: { C_Category: codigoCategoria },
+    data: { D_Category_Name: nuevoNombre },
   });
 
   revalidatePath("/dashboard/categorias/inicio");
-  redirect("/dashboard/categorias/inicio");
 }
 
 
