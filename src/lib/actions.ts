@@ -363,9 +363,6 @@ export async function fetchCategoriaById(codigoCategoria: number) {
 /* -------------------------------
    ACTUALIZAR CATEGORÍA
 -------------------------------- */
-/* -------------------------------
-   ACTUALIZAR CATEGORÍA
--------------------------------- */
 export async function updateCategoria(codigoCategoria: number, nuevoNombre: string) {
   if (!nuevoNombre) {
     console.error("El nombre de la categoría no puede estar vacío.");
@@ -397,4 +394,36 @@ export async function fetchIngredientsAll() {
       },
     },
   });
+}
+
+/* -------------------------------
+   ACTUALIZAR INGREDIENTES
+-------------------------------- */
+export async function updateIngrediente(
+  codigoIngrediente: number,
+  nuevoNombre: string,
+  nuevaUnidad: string,
+  nuevaCantidad: number
+) {
+  const unidad = await prisma.unit_Measurement.findFirst({
+    where: {
+      D_Unit_Measurement_Name: nuevaUnidad,
+    },
+  });
+
+  if (!unidad) {
+    console.error("La unidad de medida indicada no existe.");
+    throw new Error("La unidad de medida indicada no existe.");
+  }
+
+  await prisma.ingredients.update({
+    where: { C_Ingredients: codigoIngrediente },
+    data: {
+      D_Ingredients_Name: nuevoNombre,
+      C_Unit_Measurement: unidad.C_Unit_Measurement,
+      Q_Quantity: new Decimal(nuevaCantidad),
+    },
+  });
+
+  revalidatePath("/dashboard/ingredientes/inicio");
 }
