@@ -439,7 +439,7 @@ export async function insertOrder(data: {
   productos: { id: number; quantity: number }[];
 }) {
   try {
-    // Ejecutar SP
+    
     await prisma.$executeRaw`
       EXEC InsertOrders
         @D_NameClient = ${data.nombreCliente},
@@ -456,7 +456,6 @@ export async function insertOrder(data: {
       throw new Error("No se pudo recuperar la orden creada");
     }
 
-    // ✅ inserts individuales
     for (const p of data.productos) {
       await prisma.orderDetail.create({
         data: {
