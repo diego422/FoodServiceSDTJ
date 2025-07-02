@@ -2,23 +2,32 @@
 
 import { useEffect, useState } from "react";
 import { Product, Ingrediente } from "@/lib/typesProducts";
+import { getIngredientesPorProducto } from "@/lib/actions";
 
 export default function PersonalizeModal({
   producto,
   onClose,
+  onConfirm,
 }: {
   producto: Product;
   onClose: () => void;
+  onConfirm: (ingredientes: Ingrediente[]) => void;
 }) {
   const [ingredientes, setIngredientes] = useState<Ingrediente[]>([]);
 
   useEffect(() => {
-    // esto se tiene que cambiar, ya que es una simulación de datos
-    setIngredientes([
-      { id: 1, nombre: "Pan", checked: true },
-      { id: 2, nombre: "Carne", checked: true },
-      { id: 3, nombre: "Lechuga", checked: true },
-    ]);
+    async function fetchIngredientes() {
+      const data = await getIngredientesPorProducto(producto.id);
+      setIngredientes(
+        data.map((ing) => ({
+          ...ing,
+          checked: false,
+        }))
+      );
+
+    }
+
+    fetchIngredientes();
   }, [producto]);
 
   const toggleIngredient = (id: number) => {
@@ -31,6 +40,7 @@ export default function PersonalizeModal({
 
   const handleAdd = () => {
     console.log("Ingredientes seleccionados:", ingredientes);
+    onConfirm(ingredientes);
     onClose();
   };
 

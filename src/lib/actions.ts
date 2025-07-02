@@ -25,7 +25,7 @@ export async function createProducto(formData: FormData) {
   } catch (err) {
     console.error("Error al parsear ingredientesJSON", err);
   }
-//-------------------------------------------------------------------
+  //-------------------------------------------------------------------
   if (!codigoProducto || !nombre || !nombreCategoria || !nombreEstado) {
     console.error("Faltan datos obligatorios.");
     return;
@@ -78,17 +78,17 @@ export async function createProducto(formData: FormData) {
   });
 
   await Promise.all(
-  ingredientes.map((ing) =>
-    prisma.products_Ingredients.create({
-      data: {
-        C_Products: codigoProducto,
-        C_Ingredients: ing.id,
-        C_Unit_Measurement: 1,
-        Q_ConsumptionUnit: new Decimal(ing.cantidadUso),
-      },
-    })
-  )
-);
+    ingredientes.map((ing) =>
+      prisma.products_Ingredients.create({
+        data: {
+          C_Products: codigoProducto,
+          C_Ingredients: ing.id,
+          C_Unit_Measurement: 1,
+          Q_ConsumptionUnit: new Decimal(ing.cantidadUso),
+        },
+      })
+    )
+  );
   //-----------------------------------------------------------------
   revalidatePath("/dashboard/productos/inicio");
   redirect("/dashboard/productos/inicio");
@@ -143,15 +143,15 @@ export async function updateProducto(
   const cantidad = parseInt(formData.get("cantidad")?.toString() || "0");
   //-----------------------------------------------------------------
   const ingredientesJSON = formData.get("ingredientesJSON")?.toString() || "[]";
-let ingredientes: { id: number; cantidadUso: number }[] = [];
+  let ingredientes: { id: number; cantidadUso: number }[] = [];
 
-try {
-  ingredientes = JSON.parse(ingredientesJSON);
-} catch (err) {
-  console.error("Error al parsear ingredientesJSON", err);
-}
+  try {
+    ingredientes = JSON.parse(ingredientesJSON);
+  } catch (err) {
+    console.error("Error al parsear ingredientesJSON", err);
+  }
   //-----------------------------------------------------------------
-  if (!nombre || !nombreCategoria ) {
+  if (!nombre || !nombreCategoria) {
     console.error("Faltan datos obligatorios para actualizar.");
     return;
   }
@@ -182,23 +182,23 @@ try {
   });
   //-----------------------------------------------------------------
   await prisma.products_Ingredients.deleteMany({
-  where: {
-    C_Products: codigoProducto,
-  },
-});
+    where: {
+      C_Products: codigoProducto,
+    },
+  });
 
-await Promise.all(
-  ingredientes.map((ing) =>
-    prisma.products_Ingredients.create({
-      data: {
-        C_Products: codigoProducto,
-        C_Ingredients: ing.id,
-        C_Unit_Measurement: 1,
-        Q_ConsumptionUnit: new Decimal(ing.cantidadUso),
-      },
-    })
-  )
-);
+  await Promise.all(
+    ingredientes.map((ing) =>
+      prisma.products_Ingredients.create({
+        data: {
+          C_Products: codigoProducto,
+          C_Ingredients: ing.id,
+          C_Unit_Measurement: 1,
+          Q_ConsumptionUnit: new Decimal(ing.cantidadUso),
+        },
+      })
+    )
+  );
   //-----------------------------------------------------------------
 
   revalidatePath("/dashboard/productos/inicio");
@@ -432,14 +432,59 @@ export async function updateIngrediente(
    PEDIDOS
 -------------------------------- */
 
+// export async function insertOrder(data: {
+//   nombreCliente: string;
+//   metodoPago: number;
+//   tipoOrden: number;
+//   productos: { id: number; quantity: number }[];
+// }) {
+//   try {
+
+//     await prisma.$executeRaw`
+//       EXEC InsertOrders
+//         @D_NameClient = ${data.nombreCliente},
+//         @C_Payment_Method = ${data.metodoPago},
+//         @C_OrderType = ${data.tipoOrden}
+//     `;
+
+//     const newOrder = await prisma.order.findFirst({
+//       where: { D_NameClient: data.nombreCliente },
+//       orderBy: { C_Order: "desc" },
+//     });
+
+//     if (!newOrder) {
+//       throw new Error("No se pudo recuperar la orden creada");
+//     }
+
+//     for (const p of data.productos) {
+//       await prisma.orderDetail.create({
+//         data: {
+//           C_Order: newOrder.C_Order,
+//           C_Products: p.id,
+//           Q_Line_Detail_Quantity: p.quantity,
+//         },
+//       });
+//     }
+
+//     return { success: true, orderId: newOrder.C_Order };
+//   } catch (error) {
+//     console.error(error);
+//     return { success: false, error: (error as Error).message };
+//   }
+// }
+
 export async function insertOrder(data: {
   nombreCliente: string;
   metodoPago: number;
   tipoOrden: number;
-  productos: { id: number; quantity: number }[];
+  productos: {
+    id: number;
+    quantity: number;
+    ingredientes?: { id: number; checked: boolean }[];
+  }[];
 }) {
   try {
-    
+    console.log(JSON.stringify(data, null, 2))
     await prisma.$executeRaw`
       EXEC InsertOrders
         @D_NameClient = ${data.nombreCliente},
@@ -447,6 +492,7 @@ export async function insertOrder(data: {
         @C_OrderType = ${data.tipoOrden}
     `;
 
+   
     const newOrder = await prisma.order.findFirst({
       where: { D_NameClient: data.nombreCliente },
       orderBy: { C_Order: "desc" },
@@ -456,6 +502,7 @@ export async function insertOrder(data: {
       throw new Error("No se pudo recuperar la orden creada");
     }
 
+   
     for (const p of data.productos) {
       await prisma.orderDetail.create({
         data: {
@@ -464,6 +511,19 @@ export async function insertOrder(data: {
           Q_Line_Detail_Quantity: p.quantity,
         },
       });
+
+      
+      if (p.ingredientes && p.ingredientes.length > 0) {
+        for (const ing of p.ingredientes) {
+          await prisma.order_Ingredients.create({
+            data: {
+              C_Order: newOrder.C_Order,
+              C_Ingredients: ing.id,
+              IsUsed: ing.checked, 
+            },
+          });
+        }
+      }
     }
 
     return { success: true, orderId: newOrder.C_Order };
@@ -472,6 +532,8 @@ export async function insertOrder(data: {
     return { success: false, error: (error as Error).message };
   }
 }
+
+
 
 /* -------------------------------
    CIERRE DE CAJA
@@ -505,7 +567,7 @@ export async function openNewBox(formData: FormData) {
     },
   });
 
-    redirect('/dashboard/cierreCaja/inicio');
+  redirect('/dashboard/cierreCaja/inicio');
 }
 
 export async function getBoxForToday() {
@@ -540,4 +602,51 @@ export async function closeCaja(formData: FormData) {
 
 export async function openBoxStoredProcedure(montoInicial: number) {
   return await prisma.$executeRawUnsafe(`EXEC OpenBox @MontoInicial = ${montoInicial}`);
+}
+
+
+/* -------------------------------
+   Ingredientes
+-------------------------------- */
+
+
+export async function getIngredientesPorProducto(productId: number) {
+  const ingredientes = await prisma.products_Ingredients.findMany({
+    where: {
+      C_Products: productId,
+    },
+    include: {
+      Ingredients: true,
+    },
+  });
+
+  return ingredientes.map((i) => ({
+    id: i.C_Ingredients,
+    nombre: i.Ingredients.D_Ingredients_Name,
+    checked: false,
+  }));
+}
+
+
+export async function getProductosYCategorias() {
+  const productos = await prisma.products.findMany({
+    include: {
+      Category: true,
+    },
+  });
+
+  const categorias = await prisma.category.findMany();
+
+  return {
+    productos: productos.map(p => ({
+      id: p.C_Products,
+      name: p.D_Name,
+      price: p.M_Price.toNumber(),
+      category: p.Category?.D_Category_Name || "Sin categoría",
+    })),
+    categorias: categorias.map(c => ({
+      id: c.C_Category,
+      nombre: c.D_Category_Name,
+    })),
+  };
 }

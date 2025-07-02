@@ -1,30 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PersonalizeModal from "./PersonalizeModal";
 import { Product, Categoria, Ingrediente } from "@/lib/typesProducts";
+import { getProductosYCategorias } from "@/lib/actions";
 
 interface AddProductsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddProduct: (product: Product, quantity: number, ingredientes?: Ingrediente[]) => void;
-  productos: Product[];
-  categorias: Categoria[];
 }
 
 export default function AddProductsModal({
   isOpen,
   onClose,
   onAddProduct,
-  productos,
-  categorias,
 }: AddProductsModalProps) {
+  const [productos, setProductos] = useState<Product[]>([]);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
+
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [filter, setFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
 
   const [isPersonalizeOpen, setIsPersonalizeOpen] = useState(false);
+
+  useEffect(() => {
+    async function fetchData() {
+      const { productos, categorias } = await getProductosYCategorias();
+      setProductos(productos);
+      setCategorias(categorias);
+    }
+    fetchData();
+  }, []);
 
   const handlePersonalize = (product: Product) => {
     setSelectedProduct(product);
@@ -47,8 +56,8 @@ export default function AddProductsModal({
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-        <div className="bg-white p-6 rounded w-[400px]">
+      <div className="fixed inset-0 bg-black/50  flex justify-center items-center z-50 ">
+        <div className="bg-white p-6 rounded w-[90%] max-w-[1100px] max-h-[90vh]">
           <h2 className="text-lg font-bold mb-4">Añadir Productos</h2>
 
           <input
@@ -72,32 +81,40 @@ export default function AddProductsModal({
             ))}
           </select>
 
-          {filteredProducts.map((p) => (
-            <div key={p.id} className="flex items-center justify-between mb-3">
-              <span>{p.name} - ₡{p.price}</span>
-              <div className="flex gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 max-h-[500px] overflow-y-auto">
+            {filteredProducts.map((p) => (
+              <div
+                key={p.id}
+                className="border rounded p-3 shadow flex flex-col justify-between bg-gray-100"
+              >
+                <span className="font-semibold">{p.name}</span>
+                <span className="text-sm text-gray-600">₡{p.price}</span>
+
                 <input
                   type="number"
                   min={1}
                   value={quantity}
                   onChange={(e) => setQuantity(Number(e.target.value))}
-                  className="w-16 border px-2 py-1 rounded"
+                  className="border px-2 py-1 rounded mt-2"
                 />
-                <button
-                  className="bg-green-500 text-white px-3 py-1 rounded"
-                  onClick={() => handleAddProduct(p)}
-                >
-                  Agregar
-                </button>
-                <button
-                  className="bg-yellow-500 text-white px-3 py-1 rounded"
-                  onClick={() => handlePersonalize(p)}
-                >
-                  Personalizar
-                </button>
+
+                <div className="flex justify-between mt-2">
+                  <button
+                    className="bg-green-500 text-white px-2 py-1 rounded text-sm"
+                    onClick={() => handleAddProduct(p)}
+                  >
+                    Agregar
+                  </button>
+                  <button
+                    className="bg-yellow-500 text-white px-2 py-1 rounded text-sm"
+                    onClick={() => handlePersonalize(p)}
+                  >
+                    Personalizar
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
 
           <button
             onClick={onClose}
@@ -112,6 +129,10 @@ export default function AddProductsModal({
         <PersonalizeModal
           producto={selectedProduct}
           onClose={() => setIsPersonalizeOpen(false)}
+          onConfirm={(ingredientes) => {
+            onAddProduct(selectedProduct, quantity, ingredientes);
+            setIsPersonalizeOpen(false);
+          }}
         />
       )}
     </>
