@@ -13,7 +13,7 @@ export default function PersonalizeModal({
   const [ingredientes, setIngredientes] = useState<Ingrediente[]>([]);
 
   useEffect(() => {
-    // Simulando ingredientes del producto
+    // esto se tiene que cambiar, ya que es una simulación de datos
     setIngredientes([
       { id: 1, nombre: "Pan", checked: true },
       { id: 2, nombre: "Carne", checked: true },

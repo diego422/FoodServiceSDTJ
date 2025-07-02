@@ -88,19 +88,17 @@ model Order_Ingredients {
   IsUsed         Boolean?    @default(true, map: "DF__Order_Ing__IsUse__79FD19BE")
   Ingredients    Ingredients @relation(fields: [C_Ingredients], references: [C_Ingredients], onUpdate: NoAction, map: "FK__Order_Ing__C_Ing__7DCDAAA2")
   Order          Order?      @relation(fields: [C_Order], references: [C_Order], onDelete: NoAction, onUpdate: NoAction, map: "FK__Order_Ing__C_Ord__7AF13DF7")
-  OrderDetail    OrderDetail @relation(fields: [C_Order_Detail], references: [C_Order_Detail], onUpdate: NoAction, map: "FK__Order_Ing__C_Ord__7BE56230")
   Products       Products?   @relation(fields: [C_Products], references: [C_Products], onDelete: NoAction, onUpdate: NoAction, map: "FK__Order_Ing__C_Pro__7CD98669")
 
   @@id([C_Order_Detail, C_Ingredients], map: "PK__Order_In__A9D5D8CD83EEA9DC")
 }
 
 model OrderDetail {
+  C_Order_Detail         Int                    @id(map: "PK__OrderDet__A4D21DD8238649B6") @default(autoincrement())
   C_Order                BigInt
-  C_Order_Detail         Int                    @id(map: "PK_OrderDetail")
   C_Products             Int
   Q_Line_Detail_Quantity Int
   Ingredients_Products   Ingredients_Products[]
-  Order_Ingredients      Order_Ingredients[]
   Order                  Order                  @relation(fields: [C_Order], references: [C_Order], onUpdate: NoAction, map: "FK_OrderDetail_Order")
   Products               Products               @relation(fields: [C_Products], references: [C_Products], onUpdate: NoAction, map: "FK_OrderDetail_Products")
 }

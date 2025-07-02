@@ -439,7 +439,7 @@ export async function insertOrder(data: {
   productos: { id: number; quantity: number }[];
 }) {
   try {
-    // Ejecutar el procedimiento almacenado
+    // Ejecutar SP
     await prisma.$executeRaw`
       EXEC InsertOrders
         @D_NameClient = ${data.nombreCliente},
@@ -447,29 +447,25 @@ export async function insertOrder(data: {
         @C_OrderType = ${data.tipoOrden}
     `;
 
-    // Obtener la orden creada
     const newOrder = await prisma.order.findFirst({
-      where: {
-        D_NameClient: data.nombreCliente,
-      },
-      orderBy: {
-        C_Order: "desc",
-      },
+      where: { D_NameClient: data.nombreCliente },
+      orderBy: { C_Order: "desc" },
     });
 
     if (!newOrder) {
       throw new Error("No se pudo recuperar la orden creada");
     }
 
-    // Insertar los detalles de productos
-    await prisma.orderDetail.createMany({
-      data: data.productos.map((p, index) => ({
-        C_Order: newOrder.C_Order,
-        C_Order_Detail: index + 1,
-        C_Products: p.id,
-        Q_Line_Detail_Quantity: p.quantity,
-      })),
-    });
+    // ✅ inserts individuales
+    for (const p of data.productos) {
+      await prisma.orderDetail.create({
+        data: {
+          C_Order: newOrder.C_Order,
+          C_Products: p.id,
+          Q_Line_Detail_Quantity: p.quantity,
+        },
+      });
+    }
 
     return { success: true, orderId: newOrder.C_Order };
   } catch (error) {
@@ -477,3 +473,5 @@ export async function insertOrder(data: {
     return { success: false, error: (error as Error).message };
   }
 }
+
+
