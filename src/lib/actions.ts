@@ -427,3 +427,53 @@ export async function updateIngrediente(
 
   revalidatePath("/dashboard/ingredientes/inicio");
 }
+
+/* -------------------------------
+   PEDIDOS
+-------------------------------- */
+
+export async function insertOrder(data: {
+  nombreCliente: string;
+  metodoPago: number;
+  tipoOrden: number;
+  productos: { id: number; quantity: number }[];
+}) {
+  try {
+    // Ejecutar el procedimiento almacenado
+    await prisma.$executeRaw`
+      EXEC InsertOrders
+        @D_NameClient = ${data.nombreCliente},
+        @C_Payment_Method = ${data.metodoPago},
+        @C_OrderType = ${data.tipoOrden}
+    `;
+
+    // Obtener la orden creada
+    const newOrder = await prisma.order.findFirst({
+      where: {
+        D_NameClient: data.nombreCliente,
+      },
+      orderBy: {
+        C_Order: "desc",
+      },
+    });
+
+    if (!newOrder) {
+      throw new Error("No se pudo recuperar la orden creada");
+    }
+
+    // Insertar los detalles de productos
+    await prisma.orderDetail.createMany({
+      data: data.productos.map((p, index) => ({
+        C_Order: newOrder.C_Order,
+        C_Order_Detail: index + 1,
+        C_Products: p.id,
+        Q_Line_Detail_Quantity: p.quantity,
+      })),
+    });
+
+    return { success: true, orderId: newOrder.C_Order };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: (error as Error).message };
+  }
+}
