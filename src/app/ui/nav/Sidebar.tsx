@@ -11,7 +11,7 @@ const menuItems = [
   { label: "Gestión Ingredientes", href: "/dashboard/ingredientes/inicio" },
   { label: "Gestión Pedidos", href: "/dashboard/pedidos/inicio" },
   { label: "Gestión Reportes", href: "/dashboard/Reporte/inicio" },
-  { label: "Cierre de caja", href: "/dashboard/roles" },
+  { label: "Cierre de caja", href: "/dashboard/cierreCaja/inicio" },
 ];
 
 export default function Sidebar() {

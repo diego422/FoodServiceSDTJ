@@ -473,4 +473,71 @@ export async function insertOrder(data: {
   }
 }
 
+/* -------------------------------
+   CIERRE DE CAJA
+-------------------------------- */
 
+export async function getOpenBoxForToday() {
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+
+  return await prisma.box.findFirst({
+    where: {
+      F_OpenDateTime: { gte: today, lt: tomorrow },
+      F_CloseDateTime: null,
+    },
+  });
+}
+
+
+export async function openNewBox(formData: FormData) {
+  const raw = formData.get("montoInicial");
+  const monto = parseFloat(raw as string);
+
+  if (isNaN(monto) || monto < 0) {
+    throw new Error("Monto inválido");
+  }
+
+  await prisma.box.create({
+    data: {
+      F_OpenDateTime: new Date(),
+      M_OpenBox: monto,
+    },
+  });
+
+    redirect('/dashboard/cierreCaja/inicio');
+}
+
+export async function getBoxForToday() {
+  const today = new Date();
+  const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+
+  const box = await prisma.box.findFirst({
+    where: {
+      F_OpenDateTime: {
+        gte: startOfDay,
+        lt: endOfDay,
+      },
+    },
+    orderBy: {
+      F_OpenDateTime: "desc",
+    },
+  });
+
+  return box;
+}
+
+export async function closeCaja(formData: FormData) {
+  const boxId = Number(formData.get('boxId'));
+
+  if (!boxId) throw new Error("ID de caja no válido.");
+
+  await prisma.$executeRawUnsafe(`EXEC CloseBox ${boxId}`);
+
+  redirect('/dashboard/cierreCaja/inicio');
+}
+
+export async function openBoxStoredProcedure(montoInicial: number) {
+  return await prisma.$executeRawUnsafe(`EXEC OpenBox @MontoInicial = ${montoInicial}`);
+}

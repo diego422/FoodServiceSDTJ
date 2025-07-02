@@ -6,7 +6,6 @@ export default async function Page() {
   const categorias = await fetchCategorias();
   const estados = await fetchInactivationStates();
   const ingredientes = await fetchIngredientsAll();
-  // const [ingredientesAsociados, setIngredientesAsociados] = useState<SelectedIngrediente[]>([]);
 
   const listaDeIngredientes = ingredientes.map((i) => ({
     id: i.C_Ingredients,
