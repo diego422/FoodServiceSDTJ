@@ -10,7 +10,7 @@ datasource db {
 
 model Box {
   C_Box           Int       @id(map: "PK__Box__E2A25028EA6970C3") @default(autoincrement())
-  F_OpenDateTime  DateTime  @db.DateTime
+  F_OpenDateTime  DateTime? @db.DateTimeOffset
   F_CloseDateTime DateTime? @db.DateTime
   M_OpenBox       Decimal   @db.Decimal(10, 2)
   M_CloseBox      Decimal?  @db.Decimal(10, 2)
@@ -67,7 +67,7 @@ model Order {
   M_Total_price       Decimal             @db.Decimal(10, 4)
   F_Order_Date        DateTime            @default(now(), map: "DF__Order__F_Order_D__725BF7F6") @db.Date
   C_Payment_Method    Int?                @db.TinyInt
-  F_Payment_Date      DateTime?           @db.Date
+  F_Payment_Date      DateTime?           @db.DateTime
   D_NameClient        String?             @db.VarChar(60)
   C_OrderType         Int?                @db.TinyInt
   C_InactivationState Int?                @db.TinyInt
@@ -85,7 +85,7 @@ model Order_Ingredients {
   C_Order_Detail Int
   C_Products     Int?
   C_Ingredients  Int
-  IsUsed         Boolean?    @default(true, map: "DF__Order_Ing__IsUse__79FD19BE")
+  IsUsed         Boolean?
   Ingredients    Ingredients @relation(fields: [C_Ingredients], references: [C_Ingredients], onUpdate: NoAction, map: "FK__Order_Ing__C_Ing__7DCDAAA2")
   Order          Order?      @relation(fields: [C_Order], references: [C_Order], onDelete: NoAction, onUpdate: NoAction, map: "FK__Order_Ing__C_Ord__7AF13DF7")
   Products       Products?   @relation(fields: [C_Products], references: [C_Products], onDelete: NoAction, onUpdate: NoAction, map: "FK__Order_Ing__C_Pro__7CD98669")

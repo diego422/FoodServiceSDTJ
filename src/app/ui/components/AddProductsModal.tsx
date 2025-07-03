@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import PersonalizeModal from "./PersonalizeModal";
 import { Product, Categoria, Ingrediente } from "@/lib/typesProducts";
-import { getProductosYCategorias } from "@/lib/actions";
+import { getProductosYCategorias, getIngredientesPorProducto } from "@/lib/actions";
 
 interface AddProductsModalProps {
   isOpen: boolean;
@@ -40,8 +40,23 @@ export default function AddProductsModal({
     setIsPersonalizeOpen(true);
   };
 
-  const handleAddProduct = (product: Product) => {
-    onAddProduct(product, quantity);
+  const handleAddProduct = async (product: Product) => {
+    const ingredientes = await getIngredientesPorProducto(product.id);
+    const marcados = ingredientes.map((ing) => ({
+      ...ing,
+      checked: true, 
+    }));
+
+    onAddProduct(product, quantity, marcados);
+    setQuantity(1);
+  };
+
+  const handleAddProductWithIngredientes = (
+    product: Product,
+    quantity: number,
+    ingredientes: Ingrediente[]
+  ) => {
+    onAddProduct(product, quantity, ingredientes);
     setQuantity(1);
   };
 
@@ -56,7 +71,7 @@ export default function AddProductsModal({
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/50  flex justify-center items-center z-50 ">
+      <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
         <div className="bg-white p-6 rounded w-[90%] max-w-[1100px] max-h-[90vh]">
           <h2 className="text-lg font-bold mb-4">Añadir Productos</h2>
 
@@ -130,7 +145,7 @@ export default function AddProductsModal({
           producto={selectedProduct}
           onClose={() => setIsPersonalizeOpen(false)}
           onConfirm={(ingredientes) => {
-            onAddProduct(selectedProduct, quantity, ingredientes);
+            handleAddProductWithIngredientes(selectedProduct, quantity, ingredientes);
             setIsPersonalizeOpen(false);
           }}
         />

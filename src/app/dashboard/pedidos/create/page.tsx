@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import AddProductsModal from "@/app/ui/components/AddProductsModal";
-import { insertOrder} from "@/lib/actions";
+import { insertOrder } from "@/lib/actions";
 import { Product, Categoria, Ingrediente } from "@/lib/typesProducts";
 
 export default function CreateOrderPage() {
@@ -52,7 +52,7 @@ export default function CreateOrderPage() {
                         ? {
                             ...p,
                             quantity: p.quantity + quantity,
-                            ingredientes: ingredientes || p.ingredientes,
+                            ingredientes: ingredientes ?? p.ingredientes,
                         }
                         : p
                 );
@@ -77,6 +77,10 @@ export default function CreateOrderPage() {
             productos: selectedProducts.map((p) => ({
                 id: p.id,
                 quantity: p.quantity,
+                ingredientes: p.ingredientes?.map((ing) => ({
+                    id: ing.id,
+                    checked: (ing as any).checked ?? false,
+                })),
             })),
         });
 

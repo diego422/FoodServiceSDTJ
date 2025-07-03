@@ -10,16 +10,16 @@ type Props = {
     };
 };
 
-    function safeNumber(val: any): number {
-        try {
-            if (!val) return 0;
-            if (typeof val.toNumber === "function") return val.toNumber();
-            if (typeof val === "object" && val.value) return Number(val.value);
-            return Number(val);
-        } catch {
-            return 0;
-        }
+function safeNumber(val: any): number {
+    try {
+        if (!val) return 0;
+        if (typeof val.toNumber === "function") return val.toNumber();
+        if (typeof val === "object" && val.value) return Number(val.value);
+        return Number(val);
+    } catch {
+        return 0;
     }
+}
 
 export default async function CierreCajaPage({ searchParams }: Props) {
     const currentPage = Number(searchParams?.page) || 1;
@@ -36,35 +36,36 @@ export default async function CierreCajaPage({ searchParams }: Props) {
         }),
     ]);
 
-    const data = cajas.map((c) => ({
-        codigo: c.C_Box ?? "No disponible",
-        fechaApertura: c.F_OpenDateTime.toLocaleDateString(),
-        fechaCierre: c.F_CloseDateTime?.toLocaleDateString(),
-        fondoTrabajo: c.M_OpenBox ? `₡${safeNumber(c.M_OpenBox).toFixed(2)}` : "No disponible",
-        montoGenerado: c.M_TotalSales ? `₡${safeNumber(c.M_TotalSales).toFixed(2)}` : "No disponible",
-        ventasEfectivo: c.M_TotalCash ? `₡${safeNumber(c.M_TotalCash).toFixed(2)}` : "No disponible",
-        ventasSinpe: c.M_TotalSinpe ? `₡${safeNumber(c.M_TotalSinpe).toFixed(2)}` : "No disponible",
-        cierreTotal: c.M_CloseBox ? `₡${safeNumber(c.M_CloseBox).toFixed(2)}` : "₡0.00",
-    }));
+const data = cajas.map((c) => ({
+  codigo: c.C_Box ?? "No disponible",
+  fechaApertura: c.F_OpenDateTime?.toLocaleDateString(),   
+  fechaCierre: c.F_CloseDateTime?.toLocaleDateString(), 
+  fondoTrabajo: c.M_OpenBox ? `₡${safeNumber(c.M_OpenBox).toFixed(2)}` : "No disponible",
+  montoGenerado: c.M_TotalSales ? `₡${safeNumber(c.M_TotalSales).toFixed(2)}` : "No disponible",
+  ventasEfectivo: c.M_TotalCash ? `₡${safeNumber(c.M_TotalCash).toFixed(2)}` : "No disponible",
+  ventasSinpe: c.M_TotalSinpe ? `₡${safeNumber(c.M_TotalSinpe).toFixed(2)}` : "No disponible",
+  cierreTotal: c.M_CloseBox ? `₡${safeNumber(c.M_CloseBox).toFixed(2)}` : "₡0.00",
+}));
 
+console.log(data);
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
     const cajaAbiertaRaw = await getBoxForToday();
 
-const cajaAbierta = cajaAbiertaRaw
-  ? {
-      codigo: cajaAbiertaRaw.C_Box,
-      fechaApertura: cajaAbiertaRaw.F_OpenDateTime?.toISOString() ?? null,
-      fechaCierre: cajaAbiertaRaw.F_CloseDateTime?.toISOString() ?? null,
-      fondoTrabajo: Number(cajaAbiertaRaw.M_OpenBox ?? 0),
-      totalVentas: Number(cajaAbiertaRaw.M_TotalSales ?? 0),
-      totalEfectivo: Number(cajaAbiertaRaw.M_TotalCash ?? 0),
-      totalSinpe: Number(cajaAbiertaRaw.M_TotalSinpe ?? 0),
-      cierreCaja: Number(cajaAbiertaRaw.M_CloseBox ?? 0),
-    }
-  : null;
+    const cajaAbierta = cajaAbiertaRaw
+        ? {
+            codigo: cajaAbiertaRaw.C_Box,
+            fechaApertura: cajaAbiertaRaw.F_OpenDateTime?.toISOString() ?? null,
+            fechaCierre: cajaAbiertaRaw.F_CloseDateTime?.toISOString() ?? null,
+            fondoTrabajo: Number(cajaAbiertaRaw.M_OpenBox ?? 0),
+            totalVentas: Number(cajaAbiertaRaw.M_TotalSales ?? 0),
+            totalEfectivo: Number(cajaAbiertaRaw.M_TotalCash ?? 0),
+            totalSinpe: Number(cajaAbiertaRaw.M_TotalSinpe ?? 0),
+            cierreCaja: Number(cajaAbiertaRaw.M_CloseBox ?? 0),
+        }
+        : null;
 
-
+    console.log("Caja abierta raw", cajaAbiertaRaw?.F_OpenDateTime, cajaAbiertaRaw?.F_CloseDateTime);
     return (
         <div className="p-6">
             <h1 className="text-3xl font-bold mb-6 text-foreground">
@@ -72,18 +73,16 @@ const cajaAbierta = cajaAbiertaRaw
             </h1>
 
             <div className="flex justify-end mb-4">
-                {cajaAbierta?.fechaCierre == null && (
+                {cajaAbierta?.fechaCierre == null && cajaAbierta?.codigo && (
                     <form action={closeCaja}>
-                        <input type="hidden" name="boxId" value={cajaAbierta?.codigo} />
+                        <input type="hidden" name="boxId" value={cajaAbierta.codigo} />
                         <button
                             type="submit"
                             className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
                         >
                             Cerrar Caja
                         </button>
-
                     </form>
-
                 )}
                 {cajaAbierta?.fechaCierre && (
                     <form action={openNewBox} className="flex items-center gap-2">

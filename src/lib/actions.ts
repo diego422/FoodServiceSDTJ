@@ -31,7 +31,6 @@ export async function createProducto(formData: FormData) {
     return;
   }
 
-  // Buscar categoría por nombre
   const categoria = await prisma.category.findFirst({
     where: {
       D_Category_Name: nombreCategoria,
@@ -43,7 +42,6 @@ export async function createProducto(formData: FormData) {
     throw new Error("No existe la categoría indicada.");
   }
 
-  // Buscar estado por nombre
   const estado = await prisma.inactivationState.findFirst({
     where: {
       D_InactivationState: nombreEstado,
@@ -55,7 +53,6 @@ export async function createProducto(formData: FormData) {
     throw new Error("No existe el estado indicado.");
   }
 
-  // Verificar si ya existe
   const existing = await prisma.products.findUnique({
     where: { C_Products: codigoProducto },
   });
@@ -156,7 +153,6 @@ export async function updateProducto(
     return;
   }
 
-  // Buscar categoría por nombre
   const categoria = await prisma.category.findFirst({
     where: {
       D_Category_Name: nombreCategoria,
@@ -244,7 +240,6 @@ export async function createIngredients(formData: FormData) {
     return;
   }
 
-  // Buscar categoría por nombre
   const unitMeasurement = await prisma.unit_Measurement.findFirst({
     where: {
       D_Unit_Measurement_Name: UnitMeasurementeName,
@@ -256,7 +251,6 @@ export async function createIngredients(formData: FormData) {
     throw new Error("No existe la unidad de medidad indicada.");
   }
 
-  // Buscar estado por nombre
   const state = await prisma.inactivationState.findFirst({
     where: {
       D_InactivationState: StateName,
@@ -268,7 +262,6 @@ export async function createIngredients(formData: FormData) {
     throw new Error("No existe el estado indicado.");
   }
 
-  // Verificar si ya existe
   const existing = await prisma.ingredients.findUnique({
     where: { C_Ingredients: IngredientCode },
   });
@@ -316,7 +309,6 @@ export async function createCategoria(formData: FormData) {
     return;
   }
 
-  // Verificar si ya existe
   const existing = await prisma.category.findUnique({
     where: { C_Category: codigoCategoria },
   });
@@ -432,47 +424,6 @@ export async function updateIngrediente(
    PEDIDOS
 -------------------------------- */
 
-// export async function insertOrder(data: {
-//   nombreCliente: string;
-//   metodoPago: number;
-//   tipoOrden: number;
-//   productos: { id: number; quantity: number }[];
-// }) {
-//   try {
-
-//     await prisma.$executeRaw`
-//       EXEC InsertOrders
-//         @D_NameClient = ${data.nombreCliente},
-//         @C_Payment_Method = ${data.metodoPago},
-//         @C_OrderType = ${data.tipoOrden}
-//     `;
-
-//     const newOrder = await prisma.order.findFirst({
-//       where: { D_NameClient: data.nombreCliente },
-//       orderBy: { C_Order: "desc" },
-//     });
-
-//     if (!newOrder) {
-//       throw new Error("No se pudo recuperar la orden creada");
-//     }
-
-//     for (const p of data.productos) {
-//       await prisma.orderDetail.create({
-//         data: {
-//           C_Order: newOrder.C_Order,
-//           C_Products: p.id,
-//           Q_Line_Detail_Quantity: p.quantity,
-//         },
-//       });
-//     }
-
-//     return { success: true, orderId: newOrder.C_Order };
-//   } catch (error) {
-//     console.error(error);
-//     return { success: false, error: (error as Error).message };
-//   }
-// }
-
 export async function insertOrder(data: {
   nombreCliente: string;
   metodoPago: number;
@@ -484,7 +435,9 @@ export async function insertOrder(data: {
   }[];
 }) {
   try {
-    console.log(JSON.stringify(data, null, 2))
+    console.log("Insertando orden con datos:");
+    console.log(JSON.stringify(data, null, 2));
+
     await prisma.$executeRaw`
       EXEC InsertOrders
         @D_NameClient = ${data.nombreCliente},
@@ -492,19 +445,18 @@ export async function insertOrder(data: {
         @C_OrderType = ${data.tipoOrden}
     `;
 
-   
     const newOrder = await prisma.order.findFirst({
       where: { D_NameClient: data.nombreCliente },
       orderBy: { C_Order: "desc" },
     });
 
     if (!newOrder) {
-      throw new Error("No se pudo recuperar la orden creada");
+      throw new Error("No se pudo recuperar la orden creada.");
     }
 
-   
     for (const p of data.productos) {
-      await prisma.orderDetail.create({
+
+      const detail = await prisma.orderDetail.create({
         data: {
           C_Order: newOrder.C_Order,
           C_Products: p.id,
@@ -512,27 +464,64 @@ export async function insertOrder(data: {
         },
       });
 
-      
       if (p.ingredientes && p.ingredientes.length > 0) {
-        for (const ing of p.ingredientes) {
-          await prisma.order_Ingredients.create({
-            data: {
-              C_Order: newOrder.C_Order,
+        const ingredientesUnicos = Object.values(
+          Object.fromEntries(p.ingredientes.map((ing) => [ing.id, ing]))
+        );
+
+        const insertados = new Set<string>();
+
+        for (const ing of ingredientesUnicos) {
+          const key = `${detail.C_Order_Detail}_${ing.id}`;
+          if (insertados.has(key)) continue;
+          insertados.add(key);
+
+          const isUsed =
+            typeof ing.checked === "boolean"
+              ? ing.checked
+              : String(ing.checked).toLowerCase() === "true";
+
+          const exists = await prisma.order_Ingredients.findFirst({
+            where: {
+              C_Order_Detail: detail.C_Order_Detail,
               C_Ingredients: ing.id,
-              IsUsed: ing.checked, 
             },
           });
+
+          if (!exists) {
+            console.log("Insertando ingrediente:", {
+              order: newOrder.C_Order,
+              detail: detail.C_Order_Detail,
+              ingredient: ing.id,
+              checked: ing.checked,
+              finalIsUsed: isUsed,
+            });
+
+            
+
+            await prisma.order_Ingredients.create({
+              data: {
+                C_Order: newOrder.C_Order,
+                C_Order_Detail: detail.C_Order_Detail,
+                C_Products: p.id,
+                C_Ingredients: ing.id,
+                IsUsed: isUsed,
+              },
+            });
+          }
         }
       }
     }
 
     return { success: true, orderId: newOrder.C_Order };
   } catch (error) {
-    console.error(error);
-    return { success: false, error: (error as Error).message };
+    console.error("Error al insertar orden:", error);
+    return {
+      success: false,
+      error: (error as Error).message || "Error desconocido",
+    };
   }
 }
-
 
 
 /* -------------------------------
@@ -560,22 +549,29 @@ export async function openNewBox(formData: FormData) {
     throw new Error("Monto inválido");
   }
 
-  await prisma.box.create({
-    data: {
-      F_OpenDateTime: new Date(),
-      M_OpenBox: monto,
-    },
-  });
+  await prisma.$executeRawUnsafe(`EXEC OpenBox @MontoInicial = ${monto}`);
 
   redirect('/dashboard/cierreCaja/inicio');
 }
 
 export async function getBoxForToday() {
-  const today = new Date();
-  const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+  const now = new Date();
 
-  const box = await prisma.box.findFirst({
+  const startOfDay = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+    0, 0, 0, 0
+  );
+
+  const endOfDay = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + 1,
+    0, 0, 0, 0
+  );
+
+  return prisma.box.findFirst({
     where: {
       F_OpenDateTime: {
         gte: startOfDay,
@@ -586,9 +582,9 @@ export async function getBoxForToday() {
       F_OpenDateTime: "desc",
     },
   });
-
-  return box;
 }
+
+
 
 export async function closeCaja(formData: FormData) {
   const boxId = Number(formData.get('boxId'));
@@ -649,4 +645,148 @@ export async function getProductosYCategorias() {
       nombre: c.D_Category_Name,
     })),
   };
+}
+
+
+//----------------------------------------------------------------------
+
+export async function getOrderById(id: number) {
+  try {
+    const order = await prisma.order.findUnique({
+      where: { C_Order: id },
+      include: {
+        OrderDetail: {
+          include: {
+            Products: true,
+            Ingredients_Products: {
+              include: {
+                Ingredients: true,
+              },
+            },
+          },
+        },
+        PaymentMethod: true,
+        OrderType: true,
+        StateType: true,
+      },
+    });
+
+    if (!order) return null;
+
+    return {
+      nombreCliente: order.D_NameClient || "",
+      metodoPago: order.C_Payment_Method || 0,
+      tipoOrden: order.C_OrderType || 0,
+      estado: order.C_State_Type || 1,
+      productos: order.OrderDetail.map((od) => ({
+        id: od.Products.C_Products,
+        name: od.Products.D_Name,
+        price: Number(od.Products.M_Price),
+        quantity: od.Q_Line_Detail_Quantity,
+        ingredientes: od.Ingredients_Products.map((ip) => ({
+          id: ip.C_Ingredients,
+          nombre: ip.Ingredients.D_Ingredients_Name,
+          checked: ip.IsUsed === true,
+        })),
+      })),
+    };
+  } catch (error) {
+    console.error("Error al obtener la orden:", error);
+    return null;
+  }
+}
+
+export async function updateOrderState(id: number, estado: number) {
+  try {
+    await prisma.order.update({
+      where: { C_Order: id },
+      data: { C_State_Type: estado },
+    });
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: "Error al actualizar estado: " + error.message };
+  }
+}
+
+export async function updateOrder(orderId: number, data: {
+  nombreCliente: string;
+  metodoPago: number;
+  tipoOrden: number;
+  productos: {
+    id: number;
+    quantity: number;
+    ingredientes?: { id: number; checked: boolean }[];
+  }[];
+}) {
+  try {
+    if (data.productos.length === 0) {
+      return { success: false, error: "No se puede guardar una orden sin productos." };
+    }
+
+    await prisma.orderDetail.deleteMany({ where: { C_Order: orderId } });
+    await prisma.order_Ingredients.deleteMany({ where: { C_Order: orderId } });
+
+    await prisma.order.update({
+      where: { C_Order: orderId },
+      data: {
+        D_NameClient: data.nombreCliente,
+        C_OrderType: data.tipoOrden,
+        C_Payment_Method: data.metodoPago,
+        F_Payment_Date: new Date(),
+      },
+    });
+
+    for (const p of data.productos) {
+      const detail = await prisma.orderDetail.create({
+        data: {
+          C_Order: orderId,
+          C_Products: p.id,
+          Q_Line_Detail_Quantity: p.quantity,
+        },
+      });
+
+      if (p.ingredientes && p.ingredientes.length > 0) {
+        for (const ing of p.ingredientes) {
+          await prisma.order_Ingredients.create({
+            data: {
+              C_Order: orderId,
+              C_Order_Detail: detail.C_Order_Detail,
+              C_Products: p.id,
+              C_Ingredients: ing.id,
+              IsUsed: ing.checked,
+            },
+          });
+        }
+      }
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error al actualizar orden:", error);
+    return { success: false, error: "No se pudo actualizar la orden" };
+  }
+}
+
+export async function fetchTiposOrden() {
+  const tipos = await prisma.orderType.findMany();
+  return tipos.map(t => ({
+    id: t.C_OrderType,
+    nombre: t.D_OrderType,
+  }));
+}
+
+export async function fetchMetodosPago() {
+  const metodos = await prisma.paymentMethod.findMany();
+  return metodos.map(m => ({
+    id: m.C_Payment_Method,
+    nombre: m.D_Payment_Method_Name,
+  }));
+}
+
+export async function fetchEstados() {
+  const estados = await prisma.stateType.findMany();
+  return estados.map(e => ({
+    id: e.C_State_Type,
+    nombre: e.D_State_Type,
+  }));
 }
