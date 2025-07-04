@@ -1,8 +1,8 @@
 import prisma from "@/lib/prisma";
-import CierreCajaTable from "@/app/ui/components/cierreCajaTable";
+import CierreCajaTable from "@/app/ui/components/Box/cierreCajaTable";
 import Pagination from "@/app/ui/components/pagination";
 import { closeCaja, getBoxForToday, openNewBox } from "@/lib/actions";
-import ResumenCaja from "@/app/ui/components/resumenCaja";
+import ResumenCaja from "@/app/ui/components/Box/resumenCaja";
 
 type Props = {
     searchParams?: {
@@ -78,7 +78,7 @@ console.log(data);
                         <input type="hidden" name="boxId" value={cajaAbierta.codigo} />
                         <button
                             type="submit"
-                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                            className="bg-[#0DBC7C] hover:bg-green-700 text-white px-4 py-2 rounded"
                         >
                             Cerrar Caja
                         </button>
@@ -98,7 +98,7 @@ console.log(data);
 
                         <button
                             type="submit"
-                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+                            className="bg-[#0DBC7C] hover:bg-green-700 text-white px-4 py-2 rounded"
                         >
                             Abrir Nueva Caja
                         </button>

@@ -77,7 +77,7 @@ export default async function Page() {
 
             <button
                 type="submit"
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded float-right"
+                className="bg-[#0DBC7C] hover:bg-green-600 text-white font-bold py-2 px-4 rounded float-right"
             >
                 Insertar
             </button>

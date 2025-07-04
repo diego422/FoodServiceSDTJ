@@ -1,6 +1,6 @@
 import { fetchProductoById, updateProducto, fetchIngredientsAll, fetchCategorias } from "@/lib/actions";
 import { notFound } from "next/navigation";
-import IngredientesField from "@/app/ui/components/ingredientField";
+import IngredientesField from "@/app/ui/components/Products/ingredientField";
 
 
 const ingredientes = await fetchIngredientsAll();
@@ -16,7 +16,7 @@ export default async function EditProductoPage({
 }: {
   params: { id: string };
 }) {
-  // Obtener producto
+
   const producto = await fetchProductoById(Number(params.id));
 
   if (!producto) {
@@ -117,7 +117,7 @@ export default async function EditProductoPage({
 
         <button
           type="submit"
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          className="bg-[#0DBC7C] text-white px-4 py-2 rounded hover:bg-green-700"
         >
           Guardar Cambios
         </button>

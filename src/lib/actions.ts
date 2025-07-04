@@ -202,6 +202,24 @@ export async function updateProducto(
 }
 
 /* -------------------------------
+   INACTIVAR PRODUCTO
+-------------------------------- */
+
+export async function inactivateProduct(codigoProducto: number) {
+  try {
+    await prisma.products.update({
+      where: { C_Products: codigoProducto },
+      data: {
+        C_InactivationState: 0,
+      },
+    });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: "Error al inactivar el producto" };
+  }
+}
+
+/* -------------------------------
    CONSULTAR TODAS LAS CATEGORÍAS
 -------------------------------- */
 export async function fetchCategorias() {

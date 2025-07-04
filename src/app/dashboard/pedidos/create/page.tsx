@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import AddProductsModal from "@/app/ui/components/AddProductsModal";
+import AddProductsModal from "@/app/ui/components/Orders/AddProductsModal";
 import { insertOrder } from "@/lib/actions";
 import { Product, Categoria, Ingrediente } from "@/lib/typesProducts";
 
@@ -182,7 +182,7 @@ export default function CreateOrderPage() {
                 </button>
                 <button
                     onClick={handleSubmit}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded"
+                    className="bg-[#0DBC7C] hover:bg-emerald-700 text-white px-4 py-2 rounded"
                 >
                     Registrar Venta
                 </button>

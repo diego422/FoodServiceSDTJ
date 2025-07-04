@@ -1,5 +1,5 @@
 import { createCategoria, fetchCategorias } from "@/lib/actions";
-import CategoryTable from "@/app/ui/components/categoryTable";
+import CategoryTable from "@/app/ui/components/Category/categoryTable";
 import Pagination from "@/app/ui/components/pagination";
 
 type Props = {
@@ -17,7 +17,6 @@ export default async function CategoriasInicioPage({ searchParams }: Props) {
   const total = categorias.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
-  // Cortar resultados para mostrar solo la página actual
   const paginatedCategorias = categorias.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
@@ -62,7 +61,7 @@ export default async function CategoriasInicioPage({ searchParams }: Props) {
 
         <button
           type="submit"
-          className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded self-end"
+          className="bg-[#0DBC7C] hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded self-end"
         >
           Agregar Categoría
         </button>

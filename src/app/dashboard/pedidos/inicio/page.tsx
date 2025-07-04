@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 import Pagination from "@/app/ui/components/pagination";
-import OrderTable, { Pedido } from "@/app/ui/components/orderTable";
+import OrderTable, { Pedido } from "@/app/ui/components/Orders/orderTable";
 
 type Props = {
   searchParams?: {
@@ -66,7 +66,7 @@ export default async function PedidosInicioPage({ searchParams }: Props) {
       <div className="flex justify-between mb-6">
         <Link
           href="/dashboard/pedidos/create"
-          className="ml-4 bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded transition inline-block text-center"
+          className="ml-4 bg-[#0DBC7C] hover:bg-green-600 text-white font-semibold px-4 py-2 rounded transition inline-block text-center"
         >
           + Agregar Orden
         </Link>

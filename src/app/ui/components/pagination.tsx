@@ -30,7 +30,7 @@ export default function Pagination({
           className={`px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-l ${
             currentPage === 1
               ? "bg-gray-300 cursor-not-allowed"
-              : "hover:bg-green-600 hover:text-white transition"
+              : "hover:bg-[#0DBC7C] hover:text-white transition"
           }`}
         >
           &lt;
@@ -42,8 +42,8 @@ export default function Pagination({
             onClick={() => goToPage(page)}
             className={`px-3 py-2 border border-gray-400 dark:border-gray-600 ${
               currentPage === page
-                ? "bg-green-600 text-white"
-                : "hover:bg-green-600 hover:text-white transition"
+                ? "bg-[#0DBC7C] text-white"
+                : "hover:bg-[#0DBC7C] hover:text-white transition"
             }`}
           >
             {page}
@@ -56,7 +56,7 @@ export default function Pagination({
           className={`px-3 py-2 border border-gray-400 dark:border-gray-600 rounded-r ${
             currentPage === totalPages
               ? "bg-gray-300 cursor-not-allowed"
-              : "hover:bg-green-600 hover:text-white transition"
+              : "hover:bg-[#0DBC7C] hover:text-white transition"
           }`}
         >
           &gt;

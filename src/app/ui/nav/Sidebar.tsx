@@ -4,14 +4,15 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import Image from "next/image";
 
 const menuItems = [
-  { label: "Gestión Categorias", href: "/dashboard/categorias/inicio" },
-  { label: "Gestión Productos", href: "/dashboard/productos/inicio" },
-  { label: "Gestión Ingredientes", href: "/dashboard/ingredientes/inicio" },
-  { label: "Gestión Pedidos", href: "/dashboard/pedidos/inicio" },
-  { label: "Gestión Reportes", href: "/dashboard/Reporte/inicio" },
-  { label: "Cierre de caja", href: "/dashboard/cierreCaja/inicio" },
+  { label: "Gestión Categorias", href: "/dashboard/categorias/inicio", icon: "/Category_tags_icon 1.png" },
+  { label: "Gestión Productos", href: "/dashboard/productos/inicio", icon: "/ProductsIcon.png" },
+  { label: "Gestión Ingredientes", href: "/dashboard/ingredientes/inicio", icon: "/IngredientsIcon.png" },
+  { label: "Gestión Pedidos", href: "/dashboard/pedidos/inicio", icon: "/OrderIcon.png" },
+  { label: "Gestión Reportes", href: "/dashboard/Reporte/inicio", icon: "/ReportIcon.png" },
+  { label: "Cierre de caja", href: "/dashboard/cierreCaja/inicio", icon: "/BoxIcon.png" },
 ];
 
 export default function Sidebar() {
@@ -24,7 +25,7 @@ export default function Sidebar() {
         fixed top-0 left-0 h-screen
         bg-gray-800 text-white
         transition-all duration-300
-        ${isOpen ? "w-64" : "w-16"}
+        ${isOpen ? "w-64" : "w-32"}
         flex flex-col justify-between
         z-50
       `}
@@ -32,11 +33,18 @@ export default function Sidebar() {
       {/* Header */}
       <div>
         <div className="flex items-center justify-between px-4 py-4 bg-gray-900">
+          <Image
+            src="/logo_FoodService.png"
+            alt="Logo"
+            width={70}
+            height={70}
+            className="rounded"
+          />
           <span
-            className={`text-2xl font-bold text-green-400 ${
-              isOpen ? "block" : "hidden"
-            }`}
+            className={`text-2xl font-bold text-[#0DBC7C] ${isOpen ? "block" : "hidden"
+              }`}
           >
+
             FoodService SDTJ
           </span>
           <button
@@ -53,19 +61,30 @@ export default function Sidebar() {
 
         {/* Menu */}
         <nav className="flex-1 overflow-y-auto mt-6">
-          {menuItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`block px-4 py-3 rounded text-center font-medium mx-2 mb-2 transition-colors duration-200 ${
-                pathname === item.href
-                  ? "bg-green-400 text-white"
-                  : "bg-green-100 text-black hover:bg-green-200"
-              }`}
-            >
-              {isOpen ? item.label : item.label[0]}
-            </Link>
-          ))}
+          <nav className="flex-1 overflow-y-auto mt-6">
+            {menuItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center gap-2 px-4 py-3 rounded font-medium mx-2 mb-2 transition-colors duration-200 ${pathname === item.href
+                    ? "bg-[#0DBC7C] text-white"
+                    : "bg-green-100 text-black hover:bg-green-200"
+                  }`}
+              >
+                {item.icon && (
+                  <Image
+                    src={item.icon}
+                    alt="icon"
+                    width={24}
+                    height={24}
+                    className="object-contain"
+                  />
+                )}
+                {isOpen && <span>{item.label}</span>}
+              </Link>
+            ))}
+          </nav>
+
         </nav>
       </div>
 

@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 import SearchProducts from "@/app/ui/components/searchProducts";
 import Pagination from "@/app/ui/components/pagination";
-import ReportsTable from "@/app/ui/components/reportsTable";
+import ReportsTable from "@/app/ui/components/Report/reportsTable";
 
 type Props = {
     searchParams?: {

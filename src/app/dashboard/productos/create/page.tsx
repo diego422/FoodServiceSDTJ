@@ -1,5 +1,5 @@
 import { createProducto, fetchCategorias, fetchInactivationStates, fetchIngredientsAll } from "@/lib/actions";
-import IngredientesField from "@/app/ui/components/ingredientField";
+import IngredientesField from "@/app/ui/components/Products/ingredientField";
 
 export default async function Page() {
 
@@ -104,7 +104,7 @@ export default async function Page() {
       <IngredientesField ingredientesDisponibles={listaDeIngredientes} />
       <button
         type="submit"
-        className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded float-right"
+        className="bg-[#0DBC7C] hover:bg-green-600 text-white font-bold py-2 px-4 rounded float-right"
       >
         Insertar
       </button>

@@ -1,7 +1,7 @@
 "use client";
 
 import { Decimal } from "@/generated/prisma/runtime/library";
-import DataTable, { Column } from "./DataTable";
+import DataTable, { Column } from "../DataTable";
 import Link from "next/link";
 
 type Sales = {

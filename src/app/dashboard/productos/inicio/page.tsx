@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 import SearchProducts from "@/app/ui/components/searchProducts";
 import Pagination from "@/app/ui/components/pagination";
-import ProductosTable from "@/app/ui/components/productosTable";
+import ProductosTable from "@/app/ui/components/Products/productosTable";
 
 type Props = {
   searchParams?: {
@@ -25,7 +25,7 @@ export default async function ProductosPage({ searchParams }: Props) {
   // Filtrar productos
   const [total, productos] = await Promise.all([
     prisma.products.count({
-      where: {
+      where: { C_InactivationState: 1,
         OR: [
           {
             D_Name: {
@@ -43,7 +43,7 @@ export default async function ProductosPage({ searchParams }: Props) {
       },
     }),
     prisma.products.findMany({
-      where: {
+      where: { C_InactivationState: 1,
         OR: [
           {
             D_Name: {
@@ -60,7 +60,7 @@ export default async function ProductosPage({ searchParams }: Props) {
         ],
       },
       include: {
-        Category: true, // ✅ incluir datos de la categoría
+        Category: true,
       },
       orderBy: {
         C_Products: "asc",
@@ -91,7 +91,7 @@ export default async function ProductosPage({ searchParams }: Props) {
         <SearchProducts placeholder="Buscar producto o categoría" />
         <Link
           href="/dashboard/productos/create"
-          className="ml-4 bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded transition inline-block text-center"
+          className="ml-4 bg-[#0DBC7C] hover:bg-green-600 text-white font-semibold px-4 py-2 rounded transition inline-block text-center"
         >
           + Insertar
         </Link>

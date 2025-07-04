@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 // import SearchProducts from "@/app/ui/components/searchProducts";
 import Pagination from "@/app/ui/components/pagination";
-import IngredienteTable from "@/app/ui/components/ingredienteTable";
+import IngredienteTable from "@/app/ui/components/Ingredients/ingredienteTable";
 
 type Props = {
   searchParams?: {
@@ -91,7 +91,7 @@ export default async function IngredientesPage({ searchParams }: Props) {
         {/* <SearchProducts placeholder="Buscar producto o categoría" /> */}
         <Link
           href="/dashboard/ingredientes/create"
-          className="ml-4 bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded transition inline-block text-center"
+          className="ml-4 bg-[#0DBC7C] hover:bg-green-600 text-white font-semibold px-4 py-2 rounded transition inline-block text-center"
         >
           + Insertar
         </Link>

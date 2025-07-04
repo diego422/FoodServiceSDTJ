@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import AddProductsModal from "@/app/ui/components/AddProductsModal";
-import PersonalizeModal from "@/app/ui/components/PersonalizeModal";
+import AddProductsModal from "@/app/ui/components/Orders/AddProductsModal";
+import PersonalizeModal from "@/app/ui/components/Orders/PersonalizeModal";
 import {
   getOrderById,
   updateOrder,

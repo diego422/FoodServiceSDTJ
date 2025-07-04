@@ -1,7 +1,8 @@
 "use client";
 
-import DataTable, { Column } from "./DataTable";
+import DataTable, { Column } from "../DataTable";
 import Link from "next/link";
+import { inactivateProduct } from "@/lib/actions";
 
 type Producto = {
   codigoProducto: number;
@@ -42,7 +43,9 @@ export default function ProductosTable({ data }: Props) {
       label: "Inactivar",
       render: (_, row) => (
         <button
-          onClick={() => alert(`Inactivar producto: ${row.codigoProducto}`)}
+          onClick={async () => alert(`Inactivar producto: ${row.codigoProducto}`)
+        
+        }
           className="p-2 rounded border border-gray-300 hover:bg-red-100"
           title="Inactivar"
         >
