@@ -62,7 +62,6 @@ export default function IngredientesSelector({
     <div className="space-y-2">
       <label>Ingredientes:</label>
       <select
-      size={5}
         onChange={(e) => {
           const id = Number(e.target.value);
           const nombre = ingredientesDisponibles.find((i) => i.id === id)?.nombre;

@@ -27,7 +27,7 @@ import Image from "next/image";
  * - icon: path to an icon image file.
  */
 const menuItems = [
-  { label: "Inicio", href: "/", icon: "/BoxIcon.png" },
+  { label: "Inicio", href: "/", icon: "/HomeIcon.png" },
   { label: "Gestión Categorias", href: "/dashboard/categorias/inicio", icon: "/Category_tags_icon 1.png" },
   { label: "Gestión Productos", href: "/dashboard/productos/inicio", icon: "/ProductIcon.png" },
   { label: "Gestión Ingredientes", href: "/dashboard/ingredientes/inicio", icon: "/IngredientIcon.png" },
