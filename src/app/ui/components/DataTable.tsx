@@ -13,6 +13,17 @@ interface DataTableProps<T> {
   data: T[];
 }
 
+/**
+* DataTable
+*
+* Renders a generic table:
+* - Displays dynamic data in rows and columns.
+* - Allows custom columns to be rendered.
+*
+* Props:
+* @param columns - Definition of columns and labels.
+* @param data - Data to display (array of objects).
+*/
 export default function DataTable<T extends Record<string, any>>({
   columns,
   data,

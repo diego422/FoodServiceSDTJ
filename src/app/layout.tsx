@@ -18,6 +18,21 @@ export const metadata: Metadata = {
   description: "Sistema de gestión de inventario",
 };
 
+
+/**
+ * RootLayout Component:
+ *
+ * This is the top-level layout that wraps all pages.
+ *
+ * Props:
+ * - children: The page content that will be rendered inside the layout.
+ *
+ * Functionality:
+ * - Sets the language of the HTML page to English.
+ * - Applies the custom fonts via CSS variables.
+ * - Renders the Sidebar on all pages.
+ * - Places the main page content to the right of the sidebar.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{

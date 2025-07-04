@@ -9,6 +9,23 @@ interface ResumenProps {
   cierreCaja: number;
 }
 
+/**
+ * ResumenCaja
+ *
+ * Displays a summary grid showing financial figures for the cash register:
+ * - Work fund (fondo de trabajo)
+ * - Total cash
+ * - Total SINPE
+ * - Total sales
+ * - Total box closing
+ *
+ * Props:
+ * - fondoTrabajo: initial fund amount
+ * - totalEfectivo: total cash sales
+ * - totalSinpe: total SINPE sales
+ * - totalVentas: total sales amount
+ * - cierreCaja: total closing balance
+ */
 export default function ResumenCaja({
   fondoTrabajo,
   totalEfectivo,

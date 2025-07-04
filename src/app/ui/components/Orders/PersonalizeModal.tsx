@@ -4,6 +4,22 @@ import { useEffect, useState } from "react";
 import { Product, Ingrediente } from "@/lib/typesProducts";
 import { getIngredientesPorProducto } from "@/lib/actions";
 
+/**
+ * PersonalizeModal
+ *
+ * Modal to customize a product's ingredients before adding it to an order.
+ *
+ * Features:
+ * - Fetches ingredients for the selected product.
+ * - Lets the user select/deselect ingredients.
+ * - Supports "Select all" and "Clear selection."
+ * - Calls `onConfirm` with the selected ingredients when confirmed.
+ *
+ * Props:
+ * - producto: product to personalize
+ * - onClose: function to close the modal
+ * - onConfirm: callback that receives selected ingredients
+ */
 export default function PersonalizeModal({
   producto,
   onClose,

@@ -1,12 +1,33 @@
 "use client";
 
+/**
+ * Sidebar.tsx
+ *
+ * This is a Client Component in Next.js.
+ *
+ * ▸ Purpose:
+ * - Displays a collapsible sidebar on the left side of the app.
+ * - Provides navigation links to different pages of the dashboard.
+ * - Highlights the active page for better user orientation.
+ * - Contains icons for each menu item for better UX.
+ */
+
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 
+
+/**
+ * List of menu items displayed in the sidebar.
+ * Each item has:
+ * - label: text shown beside the icon.
+ * - href: URL to navigate to.
+ * - icon: path to an icon image file.
+ */
 const menuItems = [
+  { label: "Inicio", href: "/", icon: "/BoxIcon.png" },
   { label: "Gestión Categorias", href: "/dashboard/categorias/inicio", icon: "/Category_tags_icon 1.png" },
   { label: "Gestión Productos", href: "/dashboard/productos/inicio", icon: "/ProductIcon.png" },
   { label: "Gestión Ingredientes", href: "/dashboard/ingredientes/inicio", icon: "/IngredientIcon.png" },
@@ -15,6 +36,17 @@ const menuItems = [
   { label: "Cierre de caja", href: "/dashboard/cierreCaja/inicio", icon: "/BoxIcon.png" },
 ];
 
+
+/**
+ * Sidebar Component
+ *
+ * This renders a fixed vertical navigation bar.
+ *
+ * Features:
+ * - Can expand and collapse to save screen space.
+ * - Highlights the current page based on the URL.
+ * - Uses Heroicons and Next.js Image optimization.
+ */
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(true);
   const pathname = usePathname();

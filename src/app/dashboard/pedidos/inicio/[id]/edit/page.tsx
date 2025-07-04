@@ -14,6 +14,23 @@ import {
 } from "@/lib/actions";
 import { Product, Ingrediente } from "@/lib/typesProducts";
 
+/**
+ * Client page for editing an order.
+ *
+ * - Fetches an order's details by ID:
+ *    - customer name
+ *    - products and their ingredients
+ *    - order type, payment method, and state
+ * - Allows:
+ *    - editing customer name
+ *    - adding/removing products
+ *    - customizing product ingredients
+ *    - updating order type, payment method, and state
+ *    - saving changes or marking the order as completed
+ * - Integrates modals for adding and personalizing products.
+ *
+ * @returns JSX rendering the edit-order UI.
+ */
 export default function EditOrderPage() {
   const { id } = useParams();
   const router = useRouter();

@@ -1,5 +1,4 @@
 import prisma from "@/lib/prisma";
-import Link from "next/link";
 import SearchProducts from "@/app/ui/components/searchProducts";
 import Pagination from "@/app/ui/components/pagination";
 import ReportsTable from "@/app/ui/components/Report/reportsTable";
@@ -12,6 +11,24 @@ type Props = {
     };
 };
 
+/**
+ * ProductosPage
+ *
+ * Server Component that displays a sales report.
+ *
+ * Features:
+ * - Accepts search parameters (customer name or date).
+ * - Filters sales based on:
+ *    - Client name (partial match)
+ *    - Specific bill date
+ * - Paginates results.
+ * - Loads related payment method and order type info.
+ *
+ * Renders:
+ * - Search bar
+ * - ReportsTable component with sales data
+ * - Pagination controls
+ */
 export default async function ProductosPage({ searchParams }: Props) {
 
     const rawQuery = searchParams?.query || "";
@@ -70,14 +87,14 @@ export default async function ProductosPage({ searchParams }: Props) {
 
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
-    const data = sales.map((s) => ({
-        salesCode: s.C_Sales,
-        orderCode: s.C_Order,
+   const data = sales.map((s) => ({
+        salesCode: s.C_Sales.toString(),
+        orderCode: s.C_Order.toString(),
         saleDate: s.F_Bill_Date.toISOString().split("T")[0],
         totalSale: s.M_Total_Price.toFixed(4),
-        clientName: s.D_NameClient,
+        clientName: s.D_NameClient ?? "",
         paymentMethodName: s.PaymentMethod?.D_Payment_Method_Name || "Sin metodo de pago",
-        orderTypeName: s.OrderType?.D_OrderType || "Sin tipo de orden"
+        orderTypeName: s.OrderType?.D_OrderType || "Sin tipo de orden",
     }));
 
     return (

@@ -7,6 +7,17 @@ type PaginationProps = {
   totalPages: number;
 };
 
+/**
+ * Pagination
+ *
+ * Renders pagination controls.
+ * - Updates the page number in the URL query params.
+ * - Enables navigation to previous, next, or specific pages.
+ *
+ * Props:
+ * @param currentPage - The current active page.
+ * @param totalPages - Total number of pages.
+ */
 export default function Pagination({
   currentPage,
   totalPages,

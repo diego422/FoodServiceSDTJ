@@ -13,6 +13,21 @@ interface Props {
     data: Categoria[];
 }
 
+/**
+ * CategoryTable
+ *
+ * Displays a table of categories with options to:
+ * - Edit the name of a category via a modal.
+ * - Inactivate (soft-delete) a category.
+ *
+ * Features:
+ * - Opens a modal for editing when clicking the edit button.
+ * - Updates category name using the server action `updateCategoria`.
+ * - Inactivates a category with `inactivateCategory` and refreshes the page.
+ *
+ * Props:
+ * - data: list of categories to display.
+ */
 export default function CategoryTable({ data }: Props) {
 const router = useRouter();
 

@@ -21,6 +21,19 @@ interface Props {
   data: Pedido[];
 }
 
+/**
+ * OrderTable
+ *
+ * A component that renders a table of orders with actions.
+ *
+ * - Displays order data: codes, dates, prices, etc.
+ * - Provides buttons to:
+ *    - Edit the order (navigates to edit page)
+ *    - Inactivate the order (calls server-side action)
+ *
+ * Props:
+ * - data: array of orders to display
+ */
 export default function OrderTable({ data }: Props) {
   const router = useRouter();
 

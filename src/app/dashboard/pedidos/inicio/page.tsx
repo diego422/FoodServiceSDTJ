@@ -11,6 +11,24 @@ type Props = {
   };
 };
 
+/**
+ * Server component for the "Orders List" page.
+ *
+ * - Retrieves orders from the database, with filters:
+ *   - client name
+ *   - order type
+ *   - payment method
+ * - Supports pagination.
+ * - Maps raw Prisma data into a typed list for display.
+ * - Renders:
+ *   - a search bar
+ *   - a link to create a new order
+ *   - a table of orders
+ *   - pagination controls
+ *
+ * @param searchParams - Optional query string parameters for filtering and pagination.
+ * @returns JSX rendering the orders page.
+ */
 export default async function PedidosInicioPage({ searchParams }: Props) {
   const query = searchParams?.query || "";
   const currentPage = Number(searchParams?.page) || 1;

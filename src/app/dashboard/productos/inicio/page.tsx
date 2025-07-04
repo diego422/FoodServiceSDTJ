@@ -11,6 +11,18 @@ type Props = {
   };
 };
 
+/**
+ * Server component for the Products page.
+ *
+ * - Fetches products from the database.
+ * - Supports filtering by product name or category name.
+ * - Handles pagination.
+ * - Maps the raw database data into a simpler object structure for rendering in the table.
+ * - Renders the product list, a search input, and pagination controls.
+ *
+ * @param searchParams - Optional search parameters for filtering and pagination.
+ * @returns JSX rendering the page.
+ */
 export default async function ProductosPage({ searchParams }: Props) {
   const query = searchParams?.query || "";
   const currentPage = Number(searchParams?.page) || 1;

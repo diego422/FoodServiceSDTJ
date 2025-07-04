@@ -12,6 +12,19 @@ const listaDeIngredientes = ingredientes.map((i) => ({
 
 const categorias = await fetchCategorias();
 
+/**
+ * Server component for the "Edit Product" page.
+ *
+ * - Fetches the product details by ID.
+ * - Fetches available ingredients and categories.
+ * - Renders a form pre-filled with product data.
+ * - On submit, calls the server action to update the product.
+ * - Includes ingredient selection via a custom field.
+ * - Handles the case when the product does not exist.
+ *
+ * @param params.id - Product ID from the route.
+ * @returns JSX rendering the edit form.
+ */
 export default async function EditProductoPage({
   params,
 }: {

@@ -11,6 +11,19 @@ interface AddProductsModalProps {
   onAddProduct: (product: Product, quantity: number, ingredientes?: Ingrediente[]) => void;
 }
 
+/**
+* AddProductsModal
+*
+* Displays a modal for selecting and adding products:
+* - Allows you to filter products by text or category.
+* - Displays a list of products with price and quantity.
+* - Allows you to add simple or custom products with ingredients.
+*
+* Props:
+* - isOpen: Controls whether the modal is visible.
+* - onClose: Function to close the modal.
+* - onAddProduct: Function to add the selected product.
+*/
 export default function AddProductsModal({
   isOpen,
   onClose,
@@ -44,7 +57,7 @@ export default function AddProductsModal({
     const ingredientes = await getIngredientesPorProducto(product.id);
     const marcados = ingredientes.map((ing) => ({
       ...ing,
-      checked: true, 
+      checked: true,
     }));
 
     onAddProduct(product, quantity, marcados);

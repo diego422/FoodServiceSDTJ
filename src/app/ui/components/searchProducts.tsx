@@ -9,6 +9,22 @@ type SearchProps = {
   paramName?: string;
 };
 
+
+/**
+ * Search
+ *
+ * A client-side search input component.
+ *
+ * - Captures the user's text input.
+ * - Updates the URL query string with a search term.
+ * - Automatically debounces typing (waits 300ms before triggering search).
+ * - Resets pagination to page 1 when a new search is performed.
+ *
+ * Props:
+ * @param placeholder - Text shown inside the input as a hint.
+ * @param paramName - Query string key to store the search term (default: "query").
+ *
+ */
 export default function Search({
   placeholder,
   paramName = 'query',

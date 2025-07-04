@@ -18,6 +18,17 @@ interface Props {
   data: CierreCaja[];
 }
 
+/**
+ * CierreCajaTable
+ *
+ * Displays a table with cash register closure history, showing:
+ * - Code
+ * - Opening and closing dates
+ * - Cash fund and sales figures
+ *
+ * Props:
+ * - data: Array of cash register closure records to display.
+ */
 export default function CierreCajaTable({ data }: Props) {
   const columns: Column<CierreCaja>[] = [
     { key: "codigo", label: "Código" },

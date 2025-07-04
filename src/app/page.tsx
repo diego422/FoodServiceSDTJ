@@ -27,10 +27,33 @@ export default function Home() {
   if (isLoading) return null;
 
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <h1 className="text-3xl font-bold">Bienvenido al sistema</h1>
-        <p className="text-lg">Usá el menú para navegar</p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 to-white p-8">
+      <main className="bg-white p-10 rounded-xl shadow-lg max-w-xl w-full text-center animate-fade-in">
+        <img
+          src="/Logo_FoodService.png"
+          alt="Logo Food Service"
+          className="w-20 h-20 mx-auto mb-4 rounded-full shadow"
+        />
+        <h1 className="text-3xl font-bold text-emerald-700 mb-4">
+          Bienvenido al sistema
+        </h1>
+        <p className="text-gray-700 mb-6">
+          Usá el menú para navegar.
+        </p>
+        <p className="text-gray-600 mb-4">
+          <strong>Soda Maggie</strong> es un sistema de gestión diseñado para
+          facilitar el control y la administración de tu negocio.
+        </p>
+        <ul className="text-gray-600 text-left mx-auto max-w-md list-disc list-inside">
+          <li>Gestionar categorías y productos.</li>
+          <li>Controlar ingredientes y stock.</li>
+          <li>Registrar y supervisar pedidos.</li>
+          <li>Generar reportes detallados de ventas.</li>
+          <li>Realizar el cierre diario de caja.</li>
+        </ul>
+        <p className="text-gray-600 mt-4">
+          ¡Optimizá tus procesos y llevá el control total de tu soda!
+        </p>
       </main>
 
       {showModal && (

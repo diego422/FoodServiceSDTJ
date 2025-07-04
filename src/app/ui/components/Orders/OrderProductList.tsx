@@ -12,6 +12,18 @@ interface OrderProductListProps {
   onRemove: (id: number) => void;
 }
 
+/**
+* OrderProductList
+*
+* Component that displays a list of products added to an order.
+*
+* - Displays the name, quantity, and total per product.
+* - Allows you to remove products from the list using a button.
+*
+* Props:
+* - products: List of selected products.
+* - onRemove: Function to remove a product by its ID.
+*/
 export default function OrderProductList({
   products,
   onRemove,
