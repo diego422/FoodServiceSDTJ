@@ -6,8 +6,20 @@ import { redirect } from "next/navigation";
 import { Decimal } from "@prisma/client/runtime/library";
 
 /* -------------------------------
-   CREAR PRODUCTO
+  PRODUCTO
 -------------------------------- */
+
+/**
+ * Creates a new product in the database.
+ *
+ * - Reads all product details from FormData.
+ * - Checks whether the category and state exist.
+ * - Inserts the product using Prisma.
+ * - Inserts product-ingredient relationships.
+ * - Revalidates the page cache and redirects to the product list.
+ *
+ * @param formData - FormData containing all product fields.
+ */
 export async function createProducto(formData: FormData) {
   const codigoProducto = parseInt(formData.get("codigoProducto")?.toString() || "0");
   const nombre = formData.get("nombre")?.toString() || "";
@@ -94,6 +106,16 @@ export async function createProducto(formData: FormData) {
 /* -------------------------------
    CONSULTAR TODOS LOS PRODUCTOS
 -------------------------------- */
+
+/**
+ * Fetches all products from the database.
+ *
+ * Includes:
+ * - category info
+ * - inactivation state
+ *
+ * Useful for listing products in tables or dropdowns.
+ */
 export async function fetchProductos() {
   return await prisma.products.findMany({
     include: {
@@ -107,6 +129,18 @@ export async function fetchProductos() {
    CONSULTAR PRODUCTO POR ID
 -------------------------------- */
 
+/**
+ * Fetches a single product by its code (ID).
+ *
+ * Includes:
+ * - category info
+ * - inactivation state
+ * - product's ingredients and their unit of measurement
+ *
+ * Useful for editing a product or displaying its detail.
+ *
+ * @param codigoProducto - The product code (ID).
+ */
 export async function fetchProductoById(codigoProducto: number) {
   return await prisma.products.findUnique({
     where: { C_Products: codigoProducto },
@@ -129,6 +163,18 @@ export async function fetchProductoById(codigoProducto: number) {
 /* -------------------------------
    ACTUALIZAR PRODUCTO
 -------------------------------- */
+
+/**
+ * Updates a product in the database.
+ *
+ * - Updates product basic data.
+ * - Deletes all current product-ingredient relationships and reinserts them.
+ * - Ensures ingredients list is fully refreshed.
+ * - Revalidates the page and redirects to product list.
+ *
+ * @param codigoProducto - The product code (ID).
+ * @param formData - FormData with updated fields.
+ */
 export async function updateProducto(
   codigoProducto: number,
   formData: FormData
@@ -205,6 +251,15 @@ export async function updateProducto(
    INACTIVAR PRODUCTO
 -------------------------------- */
 
+/**
+ * Marks a product as inactive (soft delete).
+ *
+ * Instead of deleting it from the database, it updates the inactivation state
+ * so it no longer appears in active listings.
+ *
+ * @param codigoProducto - The product code (ID).
+ * @returns success indicator
+ */
 export async function inactivateProduct(codigoProducto: number) {
   try {
     await prisma.products.update({
@@ -222,6 +277,14 @@ export async function inactivateProduct(codigoProducto: number) {
 /* -------------------------------
    CONSULTAR TODAS LAS CATEGORÍAS
 -------------------------------- */
+
+/**
+ * Fetches all categories from the database.
+ *
+ * Useful for:
+ * - dropdowns when creating or editing products
+ * - category management screens
+ */
 export async function fetchCategorias() {
   return await prisma.category.findMany({
     select: {
@@ -234,6 +297,12 @@ export async function fetchCategorias() {
 /* -------------------------------
    CONSULTAR TODOS LOS ESTADOS
 -------------------------------- */
+
+/**
+ * Fetches all available inactivation states.
+ *
+ * These define whether a record is active or inactive.
+ */
 export async function fetchInactivationStates() {
   return await prisma.inactivationState.findMany({
     select: {
@@ -244,8 +313,19 @@ export async function fetchInactivationStates() {
 }
 
 /* -------------------------------
-   CREAR INGREDIENTE
+  INGREDIENTES
 -------------------------------- */
+
+/**
+ * Creates a new ingredient in the database.
+ *
+ * - Reads ingredient data from FormData.
+ * - Checks for existence of unit of measurement and state.
+ * - Saves ingredient to DB.
+ * - Revalidates and redirects to ingredient list.
+ *
+ * @param formData - FormData containing the ingredient details.
+ */
 export async function createIngredients(formData: FormData) {
   const IngredientCode = parseInt(formData.get("codigoIngrediente")?.toString() || "0");
   const IngredientName = formData.get("nombre")?.toString() || "";
@@ -304,8 +384,85 @@ export async function createIngredients(formData: FormData) {
 }
 
 /* -------------------------------
+   CONSULTAR TODOS LOS INGREDIENTES
+-------------------------------- */
+
+/**
+ * Fetches all active ingredients from the database.
+ *
+ * Includes:
+ * - unit of measurement info
+ *
+ * Useful for:
+ * - product ingredient assignment
+ * - displaying ingredient lists
+ */
+export async function fetchIngredientsAll() {
+  return await prisma.ingredients.findMany({
+    where: {
+      C_InactivationState: 1,
+    },
+    include: {
+      Unit_Measurement: {
+        select: {
+          D_Unit_Measurement_Name: true,
+        },
+      },
+    },
+  });
+}
+
+/* -------------------------------
+   ACTUALIZAR INGREDIENTES
+-------------------------------- */
+
+/**
+ * Updates an ingredient’s name, unit of measurement, and quantity.
+ *
+ * @param codigoIngrediente - Ingredient code (ID).
+ * @param nuevoNombre - New name.
+ * @param nuevaUnidad - New unit of measurement name.
+ * @param nuevaCantidad - New quantity.
+ */
+export async function updateIngrediente(
+  codigoIngrediente: number,
+  nuevoNombre: string,
+  nuevaUnidad: string,
+  nuevaCantidad: number
+) {
+  const unidad = await prisma.unit_Measurement.findFirst({
+    where: {
+      D_Unit_Measurement_Name: nuevaUnidad,
+    },
+  });
+
+  if (!unidad) {
+    console.error("La unidad de medida indicada no existe.");
+    throw new Error("La unidad de medida indicada no existe.");
+  }
+
+  await prisma.ingredients.update({
+    where: { C_Ingredients: codigoIngrediente },
+    data: {
+      D_Ingredients_Name: nuevoNombre,
+      C_Unit_Measurement: unidad.C_Unit_Measurement,
+      Q_Quantity: new Decimal(nuevaCantidad),
+    },
+  });
+
+  revalidatePath("/dashboard/ingredientes/inicio");
+}
+
+/* -------------------------------
    CONSULTAR TODAS LAS UNIDADES DE MEDIDA
 -------------------------------- */
+
+/**
+ * Fetches all available units of measurement (e.g., grams, liters).
+ *
+ * Useful for:
+ * - ingredient creation/edit forms
+ */
 export async function fetchUnidadMedidad() {
   return await prisma.unit_Measurement.findMany({
     select: {
@@ -316,8 +473,19 @@ export async function fetchUnidadMedidad() {
 }
 
 /* -------------------------------
-   CREAR CATEGORÍA
+  CATEGORÍA
 -------------------------------- */
+
+/**
+ * Creates a new category in the database.
+ *
+ * - Reads the category info from FormData.
+ * - Validates that the code is unique.
+ * - Saves it to the DB.
+ * - Revalidates and redirects to category list.
+ *
+ * @param formData - FormData with category details.
+ */
 export async function createCategoria(formData: FormData) {
   const codigoCategoria = parseInt(formData.get("codigoCategoria")?.toString() || "0");
   const nombre = formData.get("nombre")?.toString() || "";
@@ -350,6 +518,12 @@ export async function createCategoria(formData: FormData) {
 /* -------------------------------
    CONSULTAR TODAS LAS CATEGORÍAS
 -------------------------------- */
+
+/**
+ * Fetches all categories.
+ *
+ * Another version, used in contexts where fewer details are required.
+ */
 export async function fetchCategoriasAll() {
   return await prisma.category.findMany({
     select: {
@@ -362,6 +536,12 @@ export async function fetchCategoriasAll() {
 /* -------------------------------
    CONSULTAR CATEGORÍA POR ID
 -------------------------------- */
+
+/**
+ * Fetches a single category by its code.
+ *
+ * @param codigoCategoria - The category code (ID).
+ */
 export async function fetchCategoriaById(codigoCategoria: number) {
   return await prisma.category.findUnique({
     where: {
@@ -373,6 +553,13 @@ export async function fetchCategoriaById(codigoCategoria: number) {
 /* -------------------------------
    ACTUALIZAR CATEGORÍA
 -------------------------------- */
+
+/**
+ * Updates the name of a category.
+ *
+ * @param codigoCategoria - The category code (ID).
+ * @param nuevoNombre - The new name for the category.
+ */
 export async function updateCategoria(codigoCategoria: number, nuevoNombre: string) {
   if (!nuevoNombre) {
     console.error("El nombre de la categoría no puede estar vacío.");
@@ -388,60 +575,27 @@ export async function updateCategoria(codigoCategoria: number, nuevoNombre: stri
 }
 
 
-/* -------------------------------
-   CONSULTAR TODOS LOS INGREDIENTES
--------------------------------- */
-export async function fetchIngredientsAll() {
-  return await prisma.ingredients.findMany({
-    where: {
-      C_InactivationState: 1,
-    },
-    include: {
-      Unit_Measurement: {
-        select: {
-          D_Unit_Measurement_Name: true,
-        },
-      },
-    },
-  });
-}
 
-/* -------------------------------
-   ACTUALIZAR INGREDIENTES
--------------------------------- */
-export async function updateIngrediente(
-  codigoIngrediente: number,
-  nuevoNombre: string,
-  nuevaUnidad: string,
-  nuevaCantidad: number
-) {
-  const unidad = await prisma.unit_Measurement.findFirst({
-    where: {
-      D_Unit_Measurement_Name: nuevaUnidad,
-    },
-  });
-
-  if (!unidad) {
-    console.error("La unidad de medida indicada no existe.");
-    throw new Error("La unidad de medida indicada no existe.");
-  }
-
-  await prisma.ingredients.update({
-    where: { C_Ingredients: codigoIngrediente },
-    data: {
-      D_Ingredients_Name: nuevoNombre,
-      C_Unit_Measurement: unidad.C_Unit_Measurement,
-      Q_Quantity: new Decimal(nuevaCantidad),
-    },
-  });
-
-  revalidatePath("/dashboard/ingredientes/inicio");
-}
 
 /* -------------------------------
    PEDIDOS
 -------------------------------- */
 
+/**
+ * Inserts a new order into the system.
+ *
+ * - Calls a SQL Server stored procedure to create the order header.
+ * - Retrieves the newly created order ID.
+ * - Inserts order details (products) using Prisma.
+ * - Optionally inserts product ingredients used in the order.
+ *
+ * @param data - The full order info:
+ *   - customer name
+ *   - payment method
+ *   - order type
+ *   - products and their quantities and ingredients
+ * @returns success indicator and order ID.
+ */
 export async function insertOrder(data: {
   nombreCliente: string;
   metodoPago: number;
@@ -541,89 +695,15 @@ export async function insertOrder(data: {
   }
 }
 
-
-/* -------------------------------
-   CIERRE DE CAJA
--------------------------------- */
-
-export async function getOpenBoxForToday() {
-  const today = new Date(); today.setHours(0, 0, 0, 0);
-  const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
-
-  return await prisma.box.findFirst({
-    where: {
-      F_OpenDateTime: { gte: today, lt: tomorrow },
-      F_CloseDateTime: null,
-    },
-  });
-}
-
-
-export async function openNewBox(formData: FormData) {
-  const raw = formData.get("montoInicial");
-  const monto = parseFloat(raw as string);
-
-  if (isNaN(monto) || monto < 0) {
-    throw new Error("Monto inválido");
-  }
-
-  await prisma.$executeRawUnsafe(`EXEC OpenBox @MontoInicial = ${monto}`);
-
-  redirect('/dashboard/cierreCaja/inicio');
-}
-
-export async function getBoxForToday() {
-  const now = new Date();
-
-  const startOfDay = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate(),
-    0, 0, 0, 0
-  );
-
-  const endOfDay = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate() + 1,
-    0, 0, 0, 0
-  );
-
-  return prisma.box.findFirst({
-    where: {
-      F_OpenDateTime: {
-        gte: startOfDay,
-        lt: endOfDay,
-      },
-    },
-    orderBy: {
-      F_OpenDateTime: "desc",
-    },
-  });
-}
-
-
-
-export async function closeCaja(formData: FormData) {
-  const boxId = Number(formData.get('boxId'));
-
-  if (!boxId) throw new Error("ID de caja no válido.");
-
-  await prisma.$executeRawUnsafe(`EXEC CloseBox ${boxId}`);
-
-  redirect('/dashboard/cierreCaja/inicio');
-}
-
-export async function openBoxStoredProcedure(montoInicial: number) {
-  return await prisma.$executeRawUnsafe(`EXEC OpenBox @MontoInicial = ${montoInicial}`);
-}
-
-
-/* -------------------------------
-   Ingredientes
--------------------------------- */
-
-
+/**
+ * Fetches all ingredients assigned to a specific product.
+ *
+ * Useful for:
+ * - customizing orders
+ * - product detail views
+ *
+ * @param productId - Product code (ID).
+ */
 export async function getIngredientesPorProducto(productId: number) {
   const ingredientes = await prisma.products_Ingredients.findMany({
     where: {
@@ -641,7 +721,13 @@ export async function getIngredientesPorProducto(productId: number) {
   }));
 }
 
-
+/**
+ * Fetches all products and all categories in one call.
+ *
+ * Useful for:
+ * - rendering dropdowns for order creation
+ * - admin dashboards
+ */
 export async function getProductosYCategorias() {
   const productos = await prisma.products.findMany({
     include: {
@@ -665,9 +751,17 @@ export async function getProductosYCategorias() {
   };
 }
 
-
-//----------------------------------------------------------------------
-
+/**
+ * Fetches the complete details of an order by its ID.
+ *
+ * Includes:
+ * - order header data
+ * - products in the order
+ * - any ingredients customized for the order
+ *
+ * @param id - The order ID.
+ * @returns order details, or null if not found.
+ */
 export async function getOrderById(id: number) {
   try {
     const order = await prisma.order.findUnique({
@@ -714,6 +808,16 @@ export async function getOrderById(id: number) {
   }
 }
 
+
+/**
+ * Updates the status (state) of an order.
+ *
+ * Useful for:
+ * - marking an order as completed, canceled, etc.
+ *
+ * @param id - The order ID.
+ * @param estado - New state ID.
+ */
 export async function updateOrderState(id: number, estado: number) {
   try {
     await prisma.order.update({
@@ -726,6 +830,18 @@ export async function updateOrderState(id: number, estado: number) {
   }
 }
 
+
+/**
+ * Updates an existing order with new data.
+ *
+ * - Deletes all existing details and ingredients for the order.
+ * - Reinserts updated order details and ingredients.
+ * - Updates header fields like customer, payment method, etc.
+ *
+ * @param orderId - The order ID.
+ * @param data - The updated order details.
+ * @returns success indicator.
+ */
 export async function updateOrder(orderId: number, data: {
   nombreCliente: string;
   metodoPago: number;
@@ -785,6 +901,122 @@ export async function updateOrder(orderId: number, data: {
   }
 }
 
+/* -------------------------------
+   CIERRE DE CAJA
+-------------------------------- */
+
+/**
+ * Checks whether a box (cash register) is open today.
+ *
+ * Useful for:
+ * - ensuring only one box per day
+ */
+export async function getOpenBoxForToday() {
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+
+  return await prisma.box.findFirst({
+    where: {
+      F_OpenDateTime: { gte: today, lt: tomorrow },
+      F_CloseDateTime: null,
+    },
+  });
+}
+
+
+/**
+ * Opens a new cash register (box).
+ *
+ * Calls the stored procedure OpenBox with the initial amount.
+ *
+ * @param formData - Form data containing the opening amount.
+ */
+export async function openNewBox(formData: FormData) {
+  const raw = formData.get("montoInicial");
+  const monto = parseFloat(raw as string);
+
+  if (isNaN(monto) || monto < 0) {
+    throw new Error("Monto inválido");
+  }
+
+  await prisma.$executeRawUnsafe(`EXEC OpenBox @MontoInicial = ${monto}`);
+
+  redirect('/dashboard/cierreCaja/inicio');
+}
+
+
+/**
+ * Fetches the box record for today.
+ *
+ * Returns info about:
+ * - open time
+ * - cash totals
+ */
+export async function getBoxForToday() {
+  const now = new Date();
+
+  const startOfDay = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+    0, 0, 0, 0
+  );
+
+  const endOfDay = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + 1,
+    0, 0, 0, 0
+  );
+
+  return prisma.box.findFirst({
+    where: {
+      F_OpenDateTime: {
+        gte: startOfDay,
+        lt: endOfDay,
+      },
+    },
+    orderBy: {
+      F_OpenDateTime: "desc",
+    },
+  });
+}
+
+
+/**
+ * Closes the cash register.
+ *
+ * Calls the CloseBox stored procedure.
+ *
+ * @param formData - Form data containing the box ID.
+ */
+export async function closeCaja(formData: FormData) {
+  const boxId = Number(formData.get('boxId'));
+
+  if (!boxId) throw new Error("ID de caja no válido.");
+
+  await prisma.$executeRawUnsafe(`EXEC CloseBox ${boxId}`);
+
+  redirect('/dashboard/cierreCaja/inicio');
+}
+
+/**
+ * Opens a new box directly via the stored procedure.
+ *
+ * Accepts the opening amount as a number.
+ *
+ * @param montoInicial - Opening amount for the cash register.
+ */
+export async function openBoxStoredProcedure(montoInicial: number) {
+  return await prisma.$executeRawUnsafe(`EXEC OpenBox @MontoInicial = ${montoInicial}`);
+}
+
+
+/**
+ * Fetches all order types (e.g. dine-in, takeout).
+ *
+ * Useful for dropdowns in the UI.
+ */
 export async function fetchTiposOrden() {
   const tipos = await prisma.orderType.findMany();
   return tipos.map(t => ({
@@ -793,6 +1025,10 @@ export async function fetchTiposOrden() {
   }));
 }
 
+
+/**
+ * Fetches all available payment methods (e.g. cash, card).
+ */
 export async function fetchMetodosPago() {
   const metodos = await prisma.paymentMethod.findMany();
   return metodos.map(m => ({
@@ -801,6 +1037,9 @@ export async function fetchMetodosPago() {
   }));
 }
 
+/**
+ * Fetches all possible order states (e.g. pending, completed).
+ */
 export async function fetchEstados() {
   const estados = await prisma.stateType.findMany();
   return estados.map(e => ({

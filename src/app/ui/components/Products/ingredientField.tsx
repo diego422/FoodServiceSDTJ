@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import IngredientesSelector from "./Products/ingredienteSelector";
+import IngredientesSelector from "../Products/ingredienteSelector";
 
 type Ingrediente = {
     id: number;

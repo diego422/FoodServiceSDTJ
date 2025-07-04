@@ -1,6 +1,6 @@
 "use client";
 
-import DataTable, { Column } from "./DataTable";
+import DataTable, { Column } from "../DataTable";
 import Link from "next/link";
 
 export type Pedido = {
