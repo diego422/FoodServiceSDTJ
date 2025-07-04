@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateIngrediente } from "@/lib/actions";
+import { updateIngrediente, inactivateIngredient } from "@/lib/actions";
+import { useRouter } from "next/navigation";
 
 type Ingrediente = {
   codigoIngrediente: number;
@@ -15,6 +16,8 @@ interface Props {
 }
 
 export default function IngredienteTable({ data }: Props) {
+  const router = useRouter();
+
   const [isOpen, setIsOpen] = useState(false);
   const [editingIng, setEditingIng] = useState<Ingrediente | null>(null);
   const [newName, setNewName] = useState("");
@@ -51,9 +54,14 @@ export default function IngredienteTable({ data }: Props) {
     });
   };
 
-  const handleInactivate = (ing: Ingrediente) => {
-    alert(`Inactivar ingrediente: ${ing.codigoIngrediente}`);
-    // Aquí podrías implementar la lógica real para inactivar el ingrediente
+  const handleInactivate = async (ing: Ingrediente) => {
+    const response = inactivateIngredient(ing.codigoIngrediente);
+    if ((await response).success) {
+      alert("Ingrediente inactivado correctamente.");
+      router.refresh();
+    } else {
+      alert("Error al inactivar el ingrediente.");
+    }
   };
 
   return (
@@ -85,7 +93,7 @@ export default function IngredienteTable({ data }: Props) {
               <td className="px-4 py-2">
                 <button
                   onClick={() => openModal(ing)}
-                  className="p-2 rounded border border-gray-300 hover:bg-yellow-600"
+                  className="p-2 rounded border border-gray-300 hover:bg-green-100"
                 >
                   ✏️
                 </button>
@@ -93,7 +101,7 @@ export default function IngredienteTable({ data }: Props) {
               <td className="px-4 py-2">
                 <button
                   onClick={() => handleInactivate(ing)}
-                  className="p-2 rounded border border-gray-300 hover:bg-red-600"
+                  className="p-2 rounded border border-gray-300 hover:bg-red-100"
                 >
                   ❌
                 </button>

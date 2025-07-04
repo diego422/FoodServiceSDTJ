@@ -8,9 +8,9 @@ import Image from "next/image";
 
 const menuItems = [
   { label: "Gestión Categorias", href: "/dashboard/categorias/inicio", icon: "/Category_tags_icon 1.png" },
-  { label: "Gestión Productos", href: "/dashboard/productos/inicio", icon: "/ProductsIcon.png" },
-  { label: "Gestión Ingredientes", href: "/dashboard/ingredientes/inicio", icon: "/IngredientsIcon.png" },
-  { label: "Gestión Pedidos", href: "/dashboard/pedidos/inicio", icon: "/OrderIcon.png" },
+  { label: "Gestión Productos", href: "/dashboard/productos/inicio", icon: "/ProductIcon.png" },
+  { label: "Gestión Ingredientes", href: "/dashboard/ingredientes/inicio", icon: "/IngredientIcon.png" },
+  { label: "Gestión Pedidos", href: "/dashboard/pedidos/inicio", icon: "/OrdersIcon.png" },
   { label: "Gestión Reportes", href: "/dashboard/Reporte/inicio", icon: "/ReportIcon.png" },
   { label: "Cierre de caja", href: "/dashboard/cierreCaja/inicio", icon: "/BoxIcon.png" },
 ];

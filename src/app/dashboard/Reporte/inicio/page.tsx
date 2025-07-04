@@ -15,75 +15,50 @@ type Props = {
 export default async function ProductosPage({ searchParams }: Props) {
 
     const rawQuery = searchParams?.query || "";
-let query = rawQuery;
-let query2 = "";
+    let query = rawQuery;
+    let query2 = "";
 
-const maybeDate = new Date(rawQuery);
-if (!isNaN(maybeDate.getTime()) && /^\d{4}-\d{2}-\d{2}$/.test(rawQuery)) {
-  query2 = rawQuery;
-  query = ""; 
-}
+    const formattedDate = rawQuery.replace(/\//g, "-");
+    const maybeDate = new Date(formattedDate);
+
+    if (!isNaN(maybeDate.getTime()) && /^\d{4}-\d{2}-\d{2}$/.test(formattedDate)) {
+        query2 = formattedDate;
+        query = "";
+    }
 
     const currentPage = Number(searchParams?.page) || 1;
     const pageSize = 5;
     const isValidQuery2Date = !isNaN(new Date(query2).getTime());
 
 
-    /**
-     * Filtrado:
-     * - por nombre del producto
-     * - o por nombre de la categoría
-     */
+    const filters: any[] = [];
 
-    // Filtrar productos
+    if (query) {
+        filters.push({
+            D_NameClient: {
+                contains: query,
+            },
+        });
+    }
+
+    if (isValidQuery2Date) {
+        filters.push({
+            F_Bill_Date: {
+                gte: new Date(`${query2}T00:00:00`),
+                lte: new Date(`${query2}T23:59:59`),
+            },
+        });
+    }
+
+    const whereCondition = filters.length > 0 ? { OR: filters } : {};
+
     const [total, sales] = await Promise.all([
-        prisma.sales.count({
-            where: {
-                OR: [
-                    {
-                        D_NameClient: {
-                            contains: query,
-                        },
-                    },
-                    ...(isValidQuery2Date
-      ? [{
-          F_Bill_Date: {
-            gte: new Date(`${query2}T00:00:00`),
-            lte: new Date(`${query2}T23:59:59`),
-          },
-        }]
-      : []),
-                    {
-
-                    },
-                ],
-            },
-        }),
+        prisma.sales.count({ where: whereCondition }),
         prisma.sales.findMany({
-            where: {
-                OR: [
-                    {
-                        D_NameClient: {
-                            contains: query,
-                        },
-
-                    },
-                    ...(isValidQuery2Date
-      ? [{
-          F_Bill_Date: {
-            gte: new Date(`${query2}T00:00:00`),
-            lte: new Date(`${query2}T23:59:59`),
-          },
-        }]
-      : []),
-                    {
- 
-                    },
-                ],
-            },
+            where: whereCondition,
             include: {
                 PaymentMethod: true,
-                OrderType: true
+                OrderType: true,
             },
             orderBy: {
                 C_Sales: "asc",

@@ -1,6 +1,7 @@
 import { createCategoria, fetchCategorias } from "@/lib/actions";
 import CategoryTable from "@/app/ui/components/Category/categoryTable";
 import Pagination from "@/app/ui/components/pagination";
+import Link from "next/link";
 
 type Props = {
   searchParams?: {
@@ -58,6 +59,8 @@ export default async function CategoriasInicioPage({ searchParams }: Props) {
             required
           />
         </div>
+
+
 
         <button
           type="submit"

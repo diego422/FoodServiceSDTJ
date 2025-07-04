@@ -235,7 +235,7 @@ export default function EditOrderPage() {
       <div className="flex justify-between mt-6">
         <button
           onClick={handleChangeToFinalizado}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+          className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded"
         >
           Marcar como Finalizado
         </button>

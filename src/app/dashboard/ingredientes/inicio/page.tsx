@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import Link from "next/link";
-// import SearchProducts from "@/app/ui/components/searchProducts";
+import SearchProducts from "@/app/ui/components/searchProducts";
 import Pagination from "@/app/ui/components/pagination";
 import IngredienteTable from "@/app/ui/components/Ingredients/ingredienteTable";
 
@@ -26,7 +26,7 @@ export default async function IngredientesPage({ searchParams }: Props) {
   // Filtrar productos
   const [total, ingredientes] = await Promise.all([
     prisma.ingredients.count({
-      where: {
+      where: { C_InactivationState: 1,
         OR: [
           {
             D_Ingredients_Name: {
@@ -44,7 +44,7 @@ export default async function IngredientesPage({ searchParams }: Props) {
       },
     }),
     prisma.ingredients.findMany({
-      where: {
+      where: { C_InactivationState: 1,
         OR: [
           {
             D_Ingredients_Name: {
@@ -88,7 +88,7 @@ export default async function IngredientesPage({ searchParams }: Props) {
       </h1>
 
       <div className="flex justify-between mb-6">
-        {/* <SearchProducts placeholder="Buscar producto o categoría" /> */}
+        <SearchProducts placeholder="Buscar ingrediente o unidad de medida" />
         <Link
           href="/dashboard/ingredientes/create"
           className="ml-4 bg-[#0DBC7C] hover:bg-green-600 text-white font-semibold px-4 py-2 rounded transition inline-block text-center"

@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 import Pagination from "@/app/ui/components/pagination";
 import OrderTable, { Pedido } from "@/app/ui/components/Orders/orderTable";
+import SearchProducts from "@/app/ui/components/searchProducts";
 
 type Props = {
   searchParams?: {
@@ -17,18 +18,22 @@ export default async function PedidosInicioPage({ searchParams }: Props) {
 
   const total = await prisma.order.count({
     where: {
+      C_InactivationState: 1, C_State_Type: 1,
       OR: [
         { D_NameClient: { contains: query } },
         { OrderType: { D_OrderType: { contains: query } } },
+        { PaymentMethod: { D_Payment_Method_Name: { contains: query } } },
       ],
     },
   });
 
   const pedidos = await prisma.order.findMany({
     where: {
+      C_InactivationState: 1, C_State_Type: 1,
       OR: [
         { D_NameClient: { contains: query } },
         { OrderType: { D_OrderType: { contains: query } } },
+        { PaymentMethod: { D_Payment_Method_Name: { contains: query } } },
       ],
     },
     include: {
@@ -64,6 +69,7 @@ export default async function PedidosInicioPage({ searchParams }: Props) {
       <h1 className="text-3xl font-bold mb-6 text-foreground">Pedidos</h1>
 
       <div className="flex justify-between mb-6">
+        <SearchProducts placeholder="Buscar por nombre de cliente, tipo de orden o método de pago" />
         <Link
           href="/dashboard/pedidos/create"
           className="ml-4 bg-[#0DBC7C] hover:bg-green-600 text-white font-semibold px-4 py-2 rounded transition inline-block text-center"

@@ -1,5 +1,6 @@
 import { createProducto, fetchCategorias, fetchInactivationStates, fetchIngredientsAll } from "@/lib/actions";
 import IngredientesField from "@/app/ui/components/Products/ingredientField";
+import Link from "next/link";
 
 export default async function Page() {
 
@@ -15,7 +16,7 @@ export default async function Page() {
   return (
     <form
       action={createProducto}
-      className="bg-gray-200 p-6 rounded-lg max-w-lg mx-auto"
+      // className="bg-gray-200 p-6 rounded-lg max-w-lg mx-auto"
     >
       <div className="mb-4">
         <label className="block font-semibold">Código Producto:</label>
@@ -101,6 +102,7 @@ export default async function Page() {
           ))}
         </select>
       </div>
+
       <IngredientesField ingredientesDisponibles={listaDeIngredientes} />
       <button
         type="submit"
@@ -108,6 +110,12 @@ export default async function Page() {
       >
         Insertar
       </button>
+      <Link
+        href="/dashboard/productos/inicio"
+        className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded bg-gray-800 text-white hover:bg-gray-700 transition"
+      >
+        ← Cancelar
+      </Link>
     </form>
   );
 }

@@ -2,6 +2,8 @@
 
 import DataTable, { Column } from "../DataTable";
 import Link from "next/link";
+import { inactivateOrder } from "@/lib/actions";
+import { useRouter } from "next/navigation";
 
 export type Pedido = {
   codigoOrden: number;
@@ -20,6 +22,8 @@ interface Props {
 }
 
 export default function OrderTable({ data }: Props) {
+  const router = useRouter();
+
   const columns: Column<Pedido & { modificar: string; inactivar: string }>[] = [
     { key: "codigoOrden", label: "Código Orden" },
     { key: "numeroOrden", label: "Número Orden" },
@@ -59,10 +63,16 @@ export default function OrderTable({ data }: Props) {
       label: "Inactivar",
       render: (_, row) => (
         <button
-          onClick={() =>
-            alert(`Inactivar pedido: ${row.codigoOrden}`)
-          }
-          className="p-2 rounded border border-gray-500 hover:bg-red-600 text-white"
+          onClick={async () => {
+            const response = inactivateOrder(row.codigoOrden);
+            if ((await response).success) {
+              alert("Orden inactivada correctamente.");
+              router.refresh();
+            } else {
+              alert("Error al inactivar la orden.");
+            }
+          }}
+          className="p-2 rounded border border-gray-300 hover:bg-red-100"
           title="Inactivar"
         >
           ❌

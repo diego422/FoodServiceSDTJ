@@ -1,7 +1,8 @@
 "use client";
 
-import { updateCategoria } from "@/lib/actions";
+import { updateCategoria, inactivateCategory } from "@/lib/actions";
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 type Categoria = {
     codigoCategoria: number;
@@ -13,6 +14,8 @@ interface Props {
 }
 
 export default function CategoryTable({ data }: Props) {
+const router = useRouter();
+
     const [isOpen, setIsOpen] = useState(false);
     const [editingCat, setEditingCat] = useState<Categoria | null>(null);
     const [newName, setNewName] = useState("");
@@ -38,9 +41,14 @@ export default function CategoryTable({ data }: Props) {
         });
     };
 
-    const handleInactivate = (cat: Categoria) => {
-        alert(`Inactivar categoría: ${cat.codigoCategoria}`);
-        // Aquí podrías implementar la lógica real para inactivar la categoría
+    const handleInactivate = async (cat: Categoria) => {
+                const response = inactivateCategory(cat.codigoCategoria);
+                    if ((await response).success) {
+              alert("Categoría inactivada correctamente.");
+              router.refresh();
+            } else {
+              alert("Error al inactivar la categoría.");
+            }
     };
 
     return (
@@ -66,7 +74,7 @@ export default function CategoryTable({ data }: Props) {
                             <td className="px-4 py-2">
                                 <button
                                     onClick={() => openModal(cat)}
-                                    className="p-2 rounded border border-gray-300 hover:bg-yellow-600"
+                                    className="p-2 rounded border border-gray-300 hover:bg-green-100"
                                 >
                                     ✏️
                                 </button>
@@ -74,7 +82,7 @@ export default function CategoryTable({ data }: Props) {
                             <td className="px-4 py-2">
                                 <button
                                     onClick={() => handleInactivate(cat)}
-                                    className="p-2 rounded border border-gray-300 hover:bg-red-600"
+                                    className="p-2 rounded border border-gray-300 hover:bg-red-100"
                                 >
                                     ❌
                                 </button>

@@ -287,6 +287,9 @@ export async function inactivateProduct(codigoProducto: number) {
  */
 export async function fetchCategorias() {
   return await prisma.category.findMany({
+    where: {
+      C_InactivationState: 1,
+    },
     select: {
       C_Category: true,
       D_Category_Name: true,
@@ -454,6 +457,24 @@ export async function updateIngrediente(
 }
 
 /* -------------------------------
+   INACTIVAR INGREDIENTES
+-------------------------------- */
+
+export async function inactivateIngredient(codigoIngredientes: number) {
+  try {
+    await prisma.ingredients.update({
+      where: { C_Ingredients: codigoIngredientes },
+      data: {
+        C_InactivationState: 0,
+      },
+    });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: "Error al inactivar el ingrediente" };
+  }
+}
+
+/* -------------------------------
    CONSULTAR TODAS LAS UNIDADES DE MEDIDA
 -------------------------------- */
 
@@ -508,6 +529,7 @@ export async function createCategoria(formData: FormData) {
     data: {
       C_Category: codigoCategoria,
       D_Category_Name: nombre,
+      C_InactivationState: 1
     },
   });
 
@@ -524,14 +546,14 @@ export async function createCategoria(formData: FormData) {
  *
  * Another version, used in contexts where fewer details are required.
  */
-export async function fetchCategoriasAll() {
-  return await prisma.category.findMany({
-    select: {
-      C_Category: true,
-      D_Category_Name: true,
-    },
-  });
-}
+// export async function fetchCategoriasAll() {
+//   return await prisma.category.findMany({
+//     select: {
+//       C_Category: true,
+//       D_Category_Name: true,
+//     },
+//   });
+// }
 
 /* -------------------------------
    CONSULTAR CATEGORÍA POR ID
@@ -574,6 +596,23 @@ export async function updateCategoria(codigoCategoria: number, nuevoNombre: stri
   revalidatePath("/dashboard/categorias/inicio");
 }
 
+/* -------------------------------
+   INACTIVAR CATEGORÍA
+-------------------------------- */
+
+export async function inactivateCategory(codigoCategoria: number) {
+  try {
+    await prisma.category.update({
+      where: { C_Category: codigoCategoria },
+      data: {
+        C_InactivationState: 0,
+      },
+    });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: "Error al inactivar la categoría" };
+  }
+}
 
 
 
@@ -898,6 +937,29 @@ export async function updateOrder(orderId: number, data: {
   } catch (error) {
     console.error("Error al actualizar orden:", error);
     return { success: false, error: "No se pudo actualizar la orden" };
+  }
+}
+
+/**
+ * Inactivates an existing order.
+ *
+ * 
+ *   
+ *
+ * @param codigoOrder - The order ID.
+ * @returns success indicator.
+ */
+export async function inactivateOrder(codigoOrder: number) {
+  try {
+    await prisma.order.update({
+      where: { C_Order: codigoOrder },
+      data: {
+        C_InactivationState: 0,
+      },
+    });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: "Error al inactivar la orden" };
   }
 }
 

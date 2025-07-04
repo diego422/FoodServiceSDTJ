@@ -1,4 +1,5 @@
 import { createIngredients, fetchUnidadMedidad, fetchInactivationStates } from "@/lib/actions";
+import Link from "next/link";
 
 export default async function Page() {
 
@@ -8,7 +9,7 @@ export default async function Page() {
     return (
         <form
             action={createIngredients}
-            className="bg-gray-200 p-6 rounded-lg max-w-lg mx-auto"
+            // className="bg-gray-200 p-6 rounded-lg max-w-lg mx-auto"
         >
             <div className="mb-4">
                 <label className="block font-semibold">Código Ingrediente:</label>
@@ -81,6 +82,12 @@ export default async function Page() {
             >
                 Insertar
             </button>
+            <Link
+                href="/dashboard/ingredientes/inicio"
+                className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded bg-gray-800 text-white hover:bg-gray-700 transition"
+            >
+                ← Cancelar
+            </Link>
         </form>
     );
 }
