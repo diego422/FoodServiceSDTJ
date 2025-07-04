@@ -70,8 +70,7 @@ export async function createProducto(formData: FormData) {
   });
 
   if (existing) {
-    console.error("Ya existe un producto con ese código.");
-    throw new Error("Ya existe un producto con ese código.");
+    redirect("/dashboard/productos/inicio?error=producto_existente");
   }
   //-----------------------------------------------------------------
   await prisma.products.create({
@@ -368,8 +367,7 @@ export async function createIngredients(formData: FormData) {
   });
 
   if (existing) {
-    console.error("Ya existe un ingrediente con ese código.");
-    throw new Error("Ya existe un ingrediente con ese código.");
+    redirect("/dashboard/ingredientes/inicio?error=ingrediente_existente");
   }
 
   await prisma.ingredients.create({
@@ -521,8 +519,7 @@ export async function createCategoria(formData: FormData) {
   });
 
   if (existing) {
-    console.error("Ya existe una categoría con ese código.");
-    throw new Error("Ya existe una categoría con ese código.");
+    redirect("/dashboard/categorias/inicio?error=categoria_existente");
   }
 
   await prisma.category.create({
@@ -708,7 +705,7 @@ export async function insertOrder(data: {
               finalIsUsed: isUsed,
             });
 
-            
+
 
             await prisma.order_Ingredients.create({
               data: {

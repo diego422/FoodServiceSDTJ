@@ -27,6 +27,7 @@ export default async function Page() {
             action={createIngredients}
         >
             <div className="mb-4">
+                <h1 className="text-2xl font-bold mb-4">Crear Ingrediente</h1>
                 <label className="block font-semibold">Código Ingrediente:</label>
                 <input
                     type="number"
@@ -67,6 +68,7 @@ export default async function Page() {
                 <input
                     type="number"
                     name="cantidad"
+                    min="0"
                     className="w-full p-2 border rounded"
                     required
                 />

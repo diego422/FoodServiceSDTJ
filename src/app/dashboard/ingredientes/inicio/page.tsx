@@ -12,11 +12,13 @@ import Link from "next/link";
 import SearchProducts from "@/app/ui/components/searchProducts";
 import Pagination from "@/app/ui/components/pagination";
 import IngredienteTable from "@/app/ui/components/Ingredients/ingredienteTable";
+import ModalErrorIngredient from "@/app/ui/components/Ingredients/modalErrorIngredient";
 
 type Props = {
   searchParams?: {
     query?: string;
     page?: string;
+    error?: string;
   };
 };
 
@@ -30,12 +32,14 @@ type Props = {
 export default async function IngredientesPage({ searchParams }: Props) {
 
   const query = searchParams?.query || "";
+  const error = searchParams?.error || "";
   const currentPage = Number(searchParams?.page) || 1;
   const pageSize = 5;
 
   const [total, ingredientes] = await Promise.all([
     prisma.ingredients.count({
-      where: { C_InactivationState: 1,
+      where: {
+        C_InactivationState: 1,
         OR: [
           {
             D_Ingredients_Name: {
@@ -53,7 +57,8 @@ export default async function IngredientesPage({ searchParams }: Props) {
       },
     }),
     prisma.ingredients.findMany({
-      where: { C_InactivationState: 1,
+      where: {
+        C_InactivationState: 1,
         OR: [
           {
             D_Ingredients_Name: {
@@ -81,16 +86,16 @@ export default async function IngredientesPage({ searchParams }: Props) {
   ]);
 
   const unidades = await prisma.unit_Measurement.findMany({
-  select: {
-    C_Unit_Measurement: true,
-    D_Unit_Measurement_Name: true,
-  },
-});
+    select: {
+      C_Unit_Measurement: true,
+      D_Unit_Measurement_Name: true,
+    },
+  });
 
-const unidadesData = unidades.map((u) => ({
-  id: u.C_Unit_Measurement,
-  nombre: u.D_Unit_Measurement_Name,
-}));
+  const unidadesData = unidades.map((u) => ({
+    id: u.C_Unit_Measurement,
+    nombre: u.D_Unit_Measurement_Name,
+  }));
 
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -99,11 +104,12 @@ const unidadesData = unidades.map((u) => ({
     codigoIngrediente: i.C_Ingredients,
     nombreUnidadMedida: i.Unit_Measurement?.D_Unit_Measurement_Name,
     nombre: i.D_Ingredients_Name,
-    cantidad: i.Q_Quantity.toNumber().toFixed(4)??"0.00",
+    cantidad: i.Q_Quantity.toNumber().toFixed(4) ?? "0.00",
   }));
 
   return (
     <div className="p-6">
+      <ModalErrorIngredient error={error} />
       <h1 className="text-3xl font-bold mb-6 text-foreground">
         Ingredientes
       </h1>

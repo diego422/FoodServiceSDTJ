@@ -60,7 +60,6 @@ export default function IngredientesSelector({
 
   return (
     <div className="space-y-2">
-      <label>Ingredientes:</label>
       <select
         onChange={(e) => {
           const id = Number(e.target.value);

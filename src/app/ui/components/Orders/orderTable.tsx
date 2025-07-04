@@ -38,8 +38,8 @@ export default function OrderTable({ data }: Props) {
   const router = useRouter();
 
   const columns: Column<Pedido & { modificar: string; inactivar: string }>[] = [
-    { key: "codigoOrden", label: "Código Orden" },
-    { key: "numeroOrden", label: "Número Orden" },
+    { key: "codigoOrden", label: "Código Pedido" },
+    { key: "numeroOrden", label: "Número Pedido" },
     { key: "estado", label: "Tipo de Estado" },
     { key: "precioTotal", label: "Precio Total" },
     { key: "fecha", label: "Fecha" },
@@ -48,7 +48,7 @@ export default function OrderTable({ data }: Props) {
     { key: "nombreCliente", label: "Nombre del Cliente" },
     {
       key: "tipoOrden",
-      label: "Tipo de Orden",
+      label: "Tipo de Pedido",
       render: (value) => (
         <span
           className="block truncate max-w-[160px] whitespace-nowrap"

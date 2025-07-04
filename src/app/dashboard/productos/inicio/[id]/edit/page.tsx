@@ -75,6 +75,7 @@ export default async function EditProductoPage({
             name="precio"
             type="number"
             step="0.01"
+            min="0"
             defaultValue={producto.M_Price?.toString()}
             className="border rounded w-full px-3 py-2"
           />
@@ -103,6 +104,7 @@ export default async function EditProductoPage({
           <input
             name="cantidad"
             type="number"
+            min="0"
             defaultValue={producto.N_Quantity}
             className="border rounded w-full px-3 py-2"
           />
@@ -131,7 +133,7 @@ export default async function EditProductoPage({
             type="submit"
             className="bg-[#0DBC7C] hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
           >
-            Insertar
+            Guardar cambios
           </button>
           
         </div>

@@ -88,7 +88,7 @@ export default function CreateOrderPage() {
 
     return (
         <main className="max-w-xl mx-auto p-6">
-            <h1 className="text-2xl font-bold mb-6">Registrar Orden</h1>
+            <h1 className="text-2xl font-bold mb-6">Crear Pedido</h1>
 
             <label className="block mb-2 font-semibold">Nombre del Cliente</label>
             <input
@@ -172,7 +172,7 @@ export default function CreateOrderPage() {
                     onClick={handleSubmit}
                     className="bg-[#0DBC7C] hover:bg-emerald-700 text-white px-4 py-2 rounded"
                 >
-                    Registrar Venta
+                    Registrar Pedido
                 </button>
             </div>
 

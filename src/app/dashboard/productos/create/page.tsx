@@ -21,8 +21,7 @@ import Link from "next/link";
  * This is a page for a renders the form for a product creation.
  * @returns a form to create a product.
  */
-export default async function Page() {
-
+export default async function Page({ searchParams }: { searchParams: { error?: string } }) {
   const categorias = await fetchCategorias();
   const estados = await fetchInactivationStates();
   const ingredientes = await fetchIngredientsAll();
@@ -33,107 +32,119 @@ export default async function Page() {
   }));
 
   return (
-    <form
-      action={createProducto}
-    >
-      <div className="mb-4">
-        <label className="block font-semibold">Código Producto:</label>
-        <input
-          type="number"
-          name="codigoProducto"
-          className="w-full p-2 border rounded"
-          required
+    <>
+      {/* Display error if exists via query string */}
+      {searchParams.error && (
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `alert("${decodeURIComponent(searchParams.error)}")`,
+          }}
         />
-      </div>
+      )}
 
-      <div className="mb-4">
-        <label className="block font-semibold">Nombre:</label>
-        <input
-          type="text"
-          name="nombre"
-          className="w-full p-2 border rounded"
-          required
-        />
-      </div>
+      <form action={createProducto}>
+        <div className="mb-4">
+          <h1 className="text-2xl font-bold mb-4">Crear producto</h1>
+          <label className="block font-semibold">Código Producto:</label>
+          <input
+            type="number"
+            name="codigoProducto"
+            className="w-full p-2 border rounded"
+            required
+          />
+        </div>
 
-      <div className="mb-4">
-        <label className="block font-semibold">Descripción:</label>
-        <input
-          type="text"
-          name="descripcion"
-          className="w-full p-2 border rounded"
-        />
-      </div>
+        <div className="mb-4">
+          <label className="block font-semibold">Nombre:</label>
+          <input
+            type="text"
+            name="nombre"
+            className="w-full p-2 border rounded"
+            required
+          />
+        </div>
 
-      <div className="mb-4">
-        <label className="block font-semibold">Categoría:</label>
-        <select
-          name="nombreCategoria"
-          className="w-full p-2 border rounded"
-          required
+        <div className="mb-4">
+          <label className="block font-semibold">Descripción:</label>
+          <input
+            type="text"
+            name="descripcion"
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block font-semibold">Categoría:</label>
+          <select
+            name="nombreCategoria"
+            className="w-full p-2 border rounded"
+            required
+          >
+            <option value="">-- Seleccione una categoría --</option>
+            {categorias.map((cat) => (
+              <option key={cat.C_Category} value={cat.D_Category_Name}>
+                {cat.D_Category_Name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="mb-4">
+          <label className="block font-semibold">Precio:</label>
+          <input
+            type="number"
+            name="precio"
+            step="0.01"
+            min="0"
+            className="w-full p-2 border rounded"
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block font-semibold">Cantidad:</label>
+          <input
+            type="number"
+            name="cantidad"
+            min="0"
+            className="w-full p-2 border rounded"
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block font-semibold">Estado:</label>
+          <select
+            name="nombreEstado"
+            className="w-full p-2 border rounded"
+            required
+          >
+            <option value="">-- Seleccione un estado --</option>
+            {estados.map((estado) => (
+              <option
+                key={estado.C_InactivationState}
+                value={estado.D_InactivationState}
+              >
+                {estado.D_InactivationState}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <IngredientesField ingredientesDisponibles={listaDeIngredientes} />
+        <button
+          type="submit"
+          className="bg-[#0DBC7C] hover:bg-green-600 text-white font-bold py-2 px-4 rounded float-right"
         >
-          <option value="">-- Seleccione una categoría --</option>
-          {categorias.map((cat) => (
-            <option key={cat.C_Category} value={cat.D_Category_Name}>
-              {cat.D_Category_Name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="mb-4">
-        <label className="block font-semibold">Precio:</label>
-        <input
-          type="number"
-          name="precio"
-          step="0.01"
-          className="w-full p-2 border rounded"
-          required
-        />
-      </div>
-
-      <div className="mb-4">
-        <label className="block font-semibold">Cantidad:</label>
-        <input
-          type="number"
-          name="cantidad"
-          className="w-full p-2 border rounded"
-          required
-        />
-      </div>
-
-      <div className="mb-4">
-        <label className="block font-semibold">Estado:</label>
-        <select
-          name="nombreEstado"
-          className="w-full p-2 border rounded"
-          required
+          Insertar
+        </button>
+        <Link
+          href="/dashboard/productos/inicio"
+          className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded bg-gray-800 text-white hover:bg-gray-700 transition"
         >
-          <option value="">-- Seleccione un estado --</option>
-          {estados.map((estado) => (
-            <option
-              key={estado.C_InactivationState}
-              value={estado.D_InactivationState}
-            >
-              {estado.D_InactivationState}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <IngredientesField ingredientesDisponibles={listaDeIngredientes} />
-      <button
-        type="submit"
-        className="bg-[#0DBC7C] hover:bg-green-600 text-white font-bold py-2 px-4 rounded float-right"
-      >
-        Insertar
-      </button>
-      <Link
-        href="/dashboard/productos/inicio"
-        className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded bg-gray-800 text-white hover:bg-gray-700 transition"
-      >
-        ← Cancelar
-      </Link>
-    </form>
+          ← Cancelar
+        </Link>
+      </form>
+    </>
   );
 }

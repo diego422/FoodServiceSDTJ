@@ -175,7 +175,7 @@ export default function EditOrderPage() {
 
   return (
     <main className="max-w-xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Modificar Orden</h1>
+      <h1 className="text-2xl font-bold mb-6">Modificar Pedido</h1>
 
       <label className="block mb-2 font-semibold">Nombre del Cliente</label>
       <input

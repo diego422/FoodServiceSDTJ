@@ -9,10 +9,12 @@
 import { createCategoria, fetchCategorias } from "@/lib/actions";
 import CategoryTable from "@/app/ui/components/Category/categoryTable";
 import Pagination from "@/app/ui/components/pagination";
+import ModalErrorCategory from "@/app/ui/components/Category/modalErrorCategory";
 
 type Props = {
   searchParams?: {
     page?: string;
+    error?: string;
   };
 };
 
@@ -27,6 +29,7 @@ type Props = {
 export default async function CategoriasInicioPage({ searchParams }: Props) {
   const currentPage = Number(searchParams?.page) || 1;
   const pageSize = 5;
+    const error = searchParams?.error || "";
 
   const categorias = await fetchCategorias();
 
@@ -45,6 +48,7 @@ export default async function CategoriasInicioPage({ searchParams }: Props) {
 
   return (
     <main className="p-6">
+      <ModalErrorCategory error={error} />
       <h1 className="text-3xl font-bold mb-6 text-foreground">
         Categorías
       </h1>

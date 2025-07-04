@@ -61,14 +61,23 @@ export default function IngredienteTable({ data, unidades }: Props) {
 
   const handleSave = () => {
     if (!editingIng) return;
+
+     const cantidadNum = parseFloat(newCantidad);
+
+      if (isNaN(cantidadNum) || cantidadNum < 0) {
+    alert("La cantidad no puede ser negativa.");
+    return;
+  }
+
     startTransition(async () => {
       await updateIngrediente(
         editingIng.codigoIngrediente,
         newName,
         newUnidad,
-        parseFloat(newCantidad) || 0
+        cantidadNum
       );
       closeModal();
+      router.refresh();
     });
   };
 
@@ -174,6 +183,7 @@ export default function IngredienteTable({ data, unidades }: Props) {
               className="w-full border border-gray-300 p-2 rounded mb-4"
               placeholder="Cantidad"
               step="0.01"
+              min="0"
             />
 
             <div className="flex justify-end gap-2">

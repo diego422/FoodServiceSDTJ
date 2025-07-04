@@ -28,13 +28,13 @@ interface Props {
  */
 export default function ReportsTable({ data }: Props) {
     const columns: Column<Sales>[] = [
-        { key: "salesCode", label: "Código venta" },
-        { key: "orderCode", label: "Código orden" },
+        { key: "salesCode", label: "Código Venta" },
+        { key: "orderCode", label: "Código Pedido" },
         { key: "saleDate", label: "Fecha de venta" },
-        { key: "totalSale", label: "Total venta" },
+        { key: "totalSale", label: "Total de venta" },
         { key: "clientName", label: "Nombre cliente" },
         { key: "paymentMethodName", label: "Metodo de pago" },
-        { key: "orderTypeName", label: "Tipo de orden" },
+        { key: "orderTypeName", label: "Tipo de pedido" },
 
     ];
 
