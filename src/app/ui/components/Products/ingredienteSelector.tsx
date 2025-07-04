@@ -1,3 +1,10 @@
+/**
+ * This is the component for a product, the Ingredientesselector.
+ * 
+ * This component is the responsible to a select a ingredient from a list, assign this ingredient usage quantities, 
+ * and remove selections. Is helping to build a recipe or a product composition.
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -13,6 +20,11 @@ type SelectedIngrediente = {
   cantidadUso: number;
 };
 
+/**
+ * This function is the responsible for render a selector for adding, adjusting and removing ingredients with quantities.
+ * @param param0 A components props.
+ * @returns A selector UI for ingredients.
+ */
 export default function IngredientesSelector({
   ingredientesDisponibles,
   onChange,
@@ -50,17 +62,20 @@ export default function IngredientesSelector({
     <div className="space-y-2">
       <label>Ingredientes:</label>
       <select
+      size={5}
         onChange={(e) => {
           const id = Number(e.target.value);
           const nombre = ingredientesDisponibles.find((i) => i.id === id)?.nombre;
           if (id && nombre) agregar(id, nombre);
         }}
+        className="w-full p-2 border rounded bg-white max-h-48 overflow-y-auto"
       >
         <option value="">-- Seleccione un ingrediente --</option>
         {ingredientesDisponibles.map((i) => (
           <option key={i.id} value={i.id}>{i.nombre}</option>
         ))}
       </select>
+
 
       <ul>
         {seleccionados.map((i) => (
@@ -79,6 +94,7 @@ export default function IngredientesSelector({
           </li>
         ))}
       </ul>
+      
     </div>
   );
 }

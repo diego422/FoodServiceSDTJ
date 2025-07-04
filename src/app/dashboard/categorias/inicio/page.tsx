@@ -1,7 +1,14 @@
+/**
+ * This page is the responsable for present de information for the categories,
+ * in this page is allowed:
+ * - Display a table with the data of category.
+ * - Insert a new category via form.
+ * - View others categories in a list with a pagination.
+ */
+
 import { createCategoria, fetchCategorias } from "@/lib/actions";
 import CategoryTable from "@/app/ui/components/Category/categoryTable";
 import Pagination from "@/app/ui/components/pagination";
-import Link from "next/link";
 
 type Props = {
   searchParams?: {
@@ -9,6 +16,14 @@ type Props = {
   };
 };
 
+/**
+ * This is a server component for a renderize the main category view.
+ * 
+ * This is in charge to fetches all categories from the database, calculates the total of pagination,
+ * and renders a list with the data of the categories with a form to add new ones.
+ * @param param0 Contains optional query parameters, including the current page.
+ * @returns The rendered page.
+ */
 export default async function CategoriasInicioPage({ searchParams }: Props) {
   const currentPage = Number(searchParams?.page) || 1;
   const pageSize = 5;

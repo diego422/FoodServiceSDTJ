@@ -1,6 +1,22 @@
+/**
+ * In this page the users is allowed to insert new ingredients in the system.
+ * The main features in this pages include:
+ * - Fetching a unit measurements and inactivarion state for a form dropdowns.
+ * - Displaying a form to the utility for a insert a new ingredient with fields like code, name, unit, 
+ * quantity and status.
+ * - Submitting the form with a server action called createIngredients.
+ */
+
 import { createIngredients, fetchUnidadMedidad, fetchInactivationStates } from "@/lib/actions";
 import Link from "next/link";
 
+/**
+ * This page is for the creation of a new ingredient.
+ * It renders a full form with the necesary information of a user required 
+ * to create a ingredient, and have the submits it to the backend via a 
+ * server actions.
+ * @returns a form for a ingredient creation.
+ */
 export default async function Page() {
 
     const unidadDeMedidad = await fetchUnidadMedidad();
@@ -9,7 +25,6 @@ export default async function Page() {
     return (
         <form
             action={createIngredients}
-            // className="bg-gray-200 p-6 rounded-lg max-w-lg mx-auto"
         >
             <div className="mb-4">
                 <label className="block font-semibold">Código Ingrediente:</label>

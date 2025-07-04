@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AddProductsModal from "@/app/ui/components/Orders/AddProductsModal";
-import { insertOrder } from "@/lib/actions";
+import { insertOrder, fetchMetodosPago, fetchTiposOrden } from "@/lib/actions";
 import { Product, Categoria, Ingrediente } from "@/lib/typesProducts";
 
 export default function CreateOrderPage() {
@@ -17,27 +17,21 @@ export default function CreateOrderPage() {
     const [tipoOrden, setTipoOrden] = useState("");
     const [metodoPago, setMetodoPago] = useState("");
 
-    const products: Product[] = [
-        { id: 1, name: "Hamburguesa", price: 3500, category: "Comida Rápida" },
-        { id: 2, name: "Pizza", price: 4500, category: "Comida Italiana" },
-        { id: 3, name: "Coca-Cola", price: 800, category: "Bebidas" },
-    ];
+    const [tiposOrden, setTiposOrden] = useState<{ id: number; nombre: string }[]>([]);
+    const [metodosPago, setMetodosPago] = useState<{ id: number; nombre: string }[]>([]);
 
-    const categories: Categoria[] = [
-        { id: 1, nombre: "Comida Rápida" },
-        { id: 2, nombre: "Comida Italiana" },
-        { id: 3, nombre: "Bebidas" },
-    ];
+    useEffect(() => {
+        async function fetchData() {
+            const [tipos, metodos] = await Promise.all([
+                fetchTiposOrden(),
+                fetchMetodosPago(),
+            ]);
+            setTiposOrden(tipos);
+            setMetodosPago(metodos);
+        }
 
-    const tiposOrden = [
-        { id: 1, nombre: "Para llevar" },
-        { id: 2, nombre: "Para comer en el local" },
-    ];
-
-    const metodosPago = [
-        { id: 1, nombre: "Efectivo" },
-        { id: 2, nombre: "Tarjeta" },
-    ];
+        fetchData();
+    }, []);
 
     const handleAddProduct = (
         product: Product,
@@ -86,7 +80,6 @@ export default function CreateOrderPage() {
 
         if (response.success) {
             alert("Orden registrada correctamente!");
-
             router.push("/dashboard/pedidos/inicio");
         } else {
             alert("Error: " + response.error);
@@ -120,8 +113,7 @@ export default function CreateOrderPage() {
                         className="flex justify-between items-center bg-gray-100 p-2 rounded mb-2"
                     >
                         <span>
-                            {prod.name} x{prod.quantity} - ₡
-                            {prod.price * prod.quantity}
+                            {prod.name} x{prod.quantity} - ₡{prod.price * prod.quantity}
                         </span>
                         <button
                             onClick={() => handleRemoveProduct(prod.id)}
@@ -143,9 +135,7 @@ export default function CreateOrderPage() {
                     >
                         <option value="">Seleccione</option>
                         {tiposOrden.map((t) => (
-                            <option key={t.id} value={t.id}>
-                                {t.nombre}
-                            </option>
+                            <option key={t.id} value={t.id}>{t.nombre}</option>
                         ))}
                     </select>
                 </div>
@@ -159,9 +149,7 @@ export default function CreateOrderPage() {
                     >
                         <option value="">Seleccione</option>
                         {metodosPago.map((m) => (
-                            <option key={m.id} value={m.id}>
-                                {m.nombre}
-                            </option>
+                            <option key={m.id} value={m.id}>{m.nombre}</option>
                         ))}
                     </select>
                 </div>
@@ -192,8 +180,6 @@ export default function CreateOrderPage() {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onAddProduct={handleAddProduct}
-                productos={products}
-                categorias={categories}
             />
         </main>
     );

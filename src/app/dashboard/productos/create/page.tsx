@@ -1,7 +1,26 @@
+/**
+ * This page is the responsible for a product creation.
+ * 
+ * This page allowed the user to insert a new product in the system.
+ * The main funcionabilities are:
+ * - Displays a form to input product details.
+ * - Allows selection of category, status, and available ingredients.
+ * - Submits data using the `createProducto` action function.
+ * 
+ * This page depends for a three server actions:
+ * - fetchCategorias, is the responsible for retrieve the available categories.
+ * - fetchInactivationState, this is the responsible for retrieve the inactivatios states.
+ * - fetchIngredientsAll, this is the responsible for retrieve all ingredients with their unit measurement.
+ */
+
 import { createProducto, fetchCategorias, fetchInactivationStates, fetchIngredientsAll } from "@/lib/actions";
 import IngredientesField from "@/app/ui/components/Products/ingredientField";
 import Link from "next/link";
 
+/**
+ * This is a page for a renders the form for a product creation.
+ * @returns a form to create a product.
+ */
 export default async function Page() {
 
   const categorias = await fetchCategorias();
@@ -16,7 +35,6 @@ export default async function Page() {
   return (
     <form
       action={createProducto}
-      // className="bg-gray-200 p-6 rounded-lg max-w-lg mx-auto"
     >
       <div className="mb-4">
         <label className="block font-semibold">Código Producto:</label>

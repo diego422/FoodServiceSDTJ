@@ -83,7 +83,7 @@ console.log(data);
                             Cerrar Caja
                         </button>
                     </form>
-                )}
+                 )}
                 {cajaAbierta?.fechaCierre && (
                     <form action={openNewBox} className="flex items-center gap-2">
                         <input

@@ -1,3 +1,11 @@
+/**
+ * This is the component for a ingredient, the IngredienteTable.
+ * 
+ * Displays a table of ingredients with options to edit or inactivate each ingredient.
+ * - Provides a modal to modify ingredient name, quantity, and unit of measurement.
+ * - Allows inactivating ingredients via an async server action.
+ */
+
 "use client";
 
 import { useState, useTransition } from "react";
@@ -11,11 +19,21 @@ type Ingrediente = {
   cantidad: string;
 };
 
+type UnidadMedida = {
+  id: number;
+  nombre: string;
+};
+
 interface Props {
   data: Ingrediente[];
+  unidades: UnidadMedida[];
 }
-
-export default function IngredienteTable({ data }: Props) {
+/**
+ * This function is the responsible for renders a table of ingredients with edit and inactivate options.
+ * @param param0 
+ * @returns The rendered table and the modal in (if Open).
+ */
+export default function IngredienteTable({ data, unidades }: Props) {
   const router = useRouter();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -133,13 +151,18 @@ export default function IngredienteTable({ data }: Props) {
             <label className="block text-sm font-semibold mb-1">
               Nueva unidad de medida:
             </label>
-            <input
-              type="text"
+            <select
               value={newUnidad}
               onChange={(e) => setNewUnidad(e.target.value)}
-              className="w-full border border-gray-300 p-2 rounded mb-4"
-              placeholder="Unidad de medida"
-            />
+              className="w-full border border-gray-300 p-2 rounded mb-4 bg-white"
+            >
+              <option value="">-- Seleccione una unidad de medida --</option>
+              {unidades.map((unidad) => (
+                <option key={unidad.id} value={unidad.nombre}>
+                  {unidad.nombre}
+                </option>
+              ))}
+            </select>
 
             <label className="block text-sm font-semibold mb-1">
               Nueva cantidad:

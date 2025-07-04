@@ -1,3 +1,17 @@
+/**
+ * This is the component for a product, the productoTable.
+ * 
+ * This component renders a a list of products in a reusable DataTable format.
+ * It displays key product information such a code, category, name, description, quantity, and price.
+ * Additionally, this provide a actions buttons for a edit or to inactivate each product.
+ * 
+ * The principal features are:
+ * - Use the custom "DataTable" component to handle a table rendering.
+ * - Provides a link to the edit page for each product.
+ * - Handles product inactivation via the "inactivateProduct" action.
+ * 
+ */
+
 "use client";
 
 import DataTable, { Column } from "../DataTable";
@@ -18,6 +32,11 @@ interface Props {
   data: Producto[];
 }
 
+/**
+ * This function is responsible for a display a product list in a tabular format with the edit and the inactive option.
+ * @param param0 The component props containing product data
+ * @returns The rendered product table.
+ */
 export default function ProductosTable({ data }: Props) {
 const router = useRouter();
 
