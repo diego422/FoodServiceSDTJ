@@ -41,11 +41,6 @@ export default function ReportsTable({ data }: Props) {
 
     const dataWithActions = data.map((d) => ({
         ...d,
-        // saleDate: new Date(d.saleDate).toLocaleDateString("es-CR", {
-        //     year: "numeric",
-        //     month: "2-digit",
-        //     day: "2-digit",
-        //     }),
         }));
 
     return <DataTable columns={columns} data={dataWithActions} />;

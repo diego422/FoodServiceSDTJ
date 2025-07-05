@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AddProductsModal from "@/app/ui/components/Orders/AddProductsModal";
 import { insertOrder, fetchMetodosPago, fetchTiposOrden } from "@/lib/actions";
-import { Product, Categoria, Ingrediente } from "@/lib/typesProducts";
+import { Product, Ingrediente } from "@/lib/typesProducts";
 
 export default function CreateOrderPage() {
     const router = useRouter();
@@ -82,7 +82,7 @@ export default function CreateOrderPage() {
             alert("Orden registrada correctamente!");
             router.push("/dashboard/pedidos/inicio");
         } else {
-            alert("Error: " + response.error);
+            alert("Error: " + response.message);
         }
     };
 

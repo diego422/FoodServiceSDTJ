@@ -11,7 +11,6 @@
 import { useState, useTransition } from "react";
 import { updateIngrediente, inactivateIngredient } from "@/lib/actions";
 import { useRouter } from "next/navigation";
-import { toast } from 'react-toastify';
 
 type Ingrediente = {
   codigoIngrediente: number;

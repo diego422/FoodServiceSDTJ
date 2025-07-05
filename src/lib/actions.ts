@@ -726,9 +726,6 @@ export async function insertOrder(data: {
         }
       }
     }
-
-    // redirect("/dashboard/pedidos/inicio");
-    // return redirect("/dashboard/pedidos/inicio?success=" + encodeURIComponent("Pedido creado correctamente"));
     return { success: true, message: "Pedido creado correctamente" };
 
   } catch (error) {
@@ -940,9 +937,6 @@ export async function updateOrder(orderId: number, data: {
         }
       }
     }
-
-    // redirect("/dashboard/pedidos/inicio?success=" + encodeURIComponent("Pedido actualizado correctamente"));
-    // redirect("/dashboard/pedidos/inicio");
     return { success: true, message: "Pedido creado correctamente" };
   } catch (error) {
     console.error("Error al actualizar orden:", error);

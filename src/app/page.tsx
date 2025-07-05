@@ -3,6 +3,16 @@
 import { useEffect, useState } from "react";
 import { getOpenBoxForToday, openBoxStoredProcedure } from "@/lib/actions";
 
+/**
+ * Home component for the Soda Maggie system.
+ *
+ * - Checks if today's cash box is open on page load.
+ * - Shows a modal to enter the initial amount if the box is closed.
+ * - Displays a welcome page with system info.
+ *
+ * handleOpenBox:
+ * - Opens the cash box with the entered initial amount.
+ */
 export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [initialAmount, setInitialAmount] = useState(0);
