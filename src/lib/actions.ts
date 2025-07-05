@@ -70,7 +70,7 @@ export async function createProducto(formData: FormData) {
   });
 
   if (existing) {
-    redirect("/dashboard/productos/inicio?error=producto_existente");
+    redirect("/dashboard/productos/inicio?error=" + encodeURIComponent("Producto ya existente"));
   }
   //-----------------------------------------------------------------
   await prisma.products.create({
@@ -99,7 +99,7 @@ export async function createProducto(formData: FormData) {
   );
   //-----------------------------------------------------------------
   revalidatePath("/dashboard/productos/inicio");
-  redirect("/dashboard/productos/inicio");
+  redirect("/dashboard/productos/inicio?success=" + encodeURIComponent("Producto creado correctamente"));
 }
 
 /* -------------------------------
@@ -243,7 +243,7 @@ export async function updateProducto(
   //-----------------------------------------------------------------
 
   revalidatePath("/dashboard/productos/inicio");
-  redirect("/dashboard/productos/inicio");
+  redirect("/dashboard/productos/inicio?success=" + encodeURIComponent("Producto actualizado correctamente"));
 }
 
 /* -------------------------------
@@ -367,7 +367,7 @@ export async function createIngredients(formData: FormData) {
   });
 
   if (existing) {
-    redirect("/dashboard/ingredientes/inicio?error=ingrediente_existente");
+    redirect("/dashboard/ingredientes/inicio?error=" + encodeURIComponent("Ingrediente ya existente"));
   }
 
   await prisma.ingredients.create({
@@ -381,7 +381,7 @@ export async function createIngredients(formData: FormData) {
   });
 
   revalidatePath("/dashboard/ingredientes/inicio");
-  redirect("/dashboard/ingredientes/inicio");
+  redirect("/dashboard/ingredientes/inicio?success=" + encodeURIComponent("Ingrediente creado correctamente"));
 }
 
 /* -------------------------------
@@ -452,6 +452,7 @@ export async function updateIngrediente(
   });
 
   revalidatePath("/dashboard/ingredientes/inicio");
+  redirect("/dashboard/ingredientes/inicio?success=" + encodeURIComponent("Ingrediente actualizado correctamente"));
 }
 
 /* -------------------------------
@@ -519,7 +520,7 @@ export async function createCategoria(formData: FormData) {
   });
 
   if (existing) {
-    redirect("/dashboard/categorias/inicio?error=categoria_existente");
+    redirect("/dashboard/categorias/inicio?error=" + encodeURIComponent("La categoría ya existe"));
   }
 
   await prisma.category.create({
@@ -531,7 +532,7 @@ export async function createCategoria(formData: FormData) {
   });
 
   revalidatePath("/dashboard/categorias/inicio");
-  redirect("/dashboard/categorias/inicio");
+  redirect("/dashboard/categorias/inicio?success=" + encodeURIComponent("Categoría creada correctamente"));
 }
 
 /* -------------------------------
@@ -591,6 +592,7 @@ export async function updateCategoria(codigoCategoria: number, nuevoNombre: stri
   });
 
   revalidatePath("/dashboard/categorias/inicio");
+  redirect("/dashboard/categorias/inicio?success=" + encodeURIComponent("Categoría actualizada correctamente"));
 }
 
 /* -------------------------------

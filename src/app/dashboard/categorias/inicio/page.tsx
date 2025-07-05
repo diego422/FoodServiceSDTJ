@@ -9,12 +9,13 @@
 import { createCategoria, fetchCategorias } from "@/lib/actions";
 import CategoryTable from "@/app/ui/components/Category/categoryTable";
 import Pagination from "@/app/ui/components/pagination";
-import ModalErrorCategory from "@/app/ui/components/Category/modalErrorCategory";
+import MessageNotification from "@/app/ui/components/messageNotification";
 
 type Props = {
   searchParams?: {
     page?: string;
     error?: string;
+    success?: string;
   };
 };
 
@@ -29,7 +30,8 @@ type Props = {
 export default async function CategoriasInicioPage({ searchParams }: Props) {
   const currentPage = Number(searchParams?.page) || 1;
   const pageSize = 5;
-    const error = searchParams?.error || "";
+  const error = searchParams?.error || "";
+  const success = searchParams?.success || "";
 
   const categorias = await fetchCategorias();
 
@@ -48,7 +50,10 @@ export default async function CategoriasInicioPage({ searchParams }: Props) {
 
   return (
     <main className="p-6">
-      <ModalErrorCategory error={error} />
+
+      {error && <MessageNotification type="error" message={decodeURIComponent(error)} />}
+      {success && <MessageNotification type="success" message={decodeURIComponent(success)} />}
+
       <h1 className="text-3xl font-bold mb-6 text-foreground">
         Categorías
       </h1>

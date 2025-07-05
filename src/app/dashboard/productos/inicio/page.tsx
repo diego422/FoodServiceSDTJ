@@ -3,13 +3,14 @@ import Link from "next/link";
 import SearchProducts from "@/app/ui/components/searchProducts";
 import Pagination from "@/app/ui/components/pagination";
 import ProductosTable from "@/app/ui/components/Products/productosTable";
-import ModalErrorProduct from "@/app/ui/components/Products/modalErrorProduct";
+import MessageNotification from "@/app/ui/components/messageNotification";
 
 type Props = {
   searchParams?: {
     query?: string;
     page?: string;
     error?: string;
+    success?: string;
   };
 };
 
@@ -28,6 +29,7 @@ type Props = {
 export default async function ProductosPage({ searchParams }: Props) {
   const query = searchParams?.query || "";
   const error = searchParams?.error || "";
+  const success = searchParams?.success || "";
   const currentPage = Number(searchParams?.page) || 1;
   const pageSize = 5;
 
@@ -98,7 +100,8 @@ export default async function ProductosPage({ searchParams }: Props) {
 
   return (
     <div className="p-6">
-      <ModalErrorProduct error={error} />
+            {error && <MessageNotification type="error" message={decodeURIComponent(error)} />}
+            {success && <MessageNotification type="success" message={decodeURIComponent(success)} />}
       <h1 className="text-3xl font-bold mb-6 text-foreground">
         Productos
       </h1>
