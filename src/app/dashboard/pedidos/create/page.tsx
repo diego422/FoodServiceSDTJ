@@ -127,7 +127,7 @@ export default function CreateOrderPage() {
 
             <div className="flex gap-4 mt-6">
                 <div className="flex-1">
-                    <label className="block mb-2 font-semibold">Tipo de orden</label>
+                    <label className="block mb-2 font-semibold">Tipo de pedido</label>
                     <select
                         value={tipoOrden}
                         onChange={(e) => setTipoOrden(e.target.value)}

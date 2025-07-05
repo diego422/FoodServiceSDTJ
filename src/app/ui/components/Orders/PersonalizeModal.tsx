@@ -125,7 +125,7 @@ export default function PersonalizeModal({
             onClick={handleAdd}
             className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded"
           >
-            Añadir a la orden
+            Añadir al pedido
           </button>
         </div>
       </div>

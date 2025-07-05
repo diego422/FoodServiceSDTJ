@@ -64,7 +64,7 @@ export default function OrderTable({ data }: Props) {
       render: (_, row) => (
         <Link
           href={`/dashboard/pedidos/inicio/${row.codigoOrden}/edit`}
-          className="p-2 rounded border border-gray-500 hover:bg-yellow-600 text-white"
+          className="p-2 rounded border border-gray-500 hover:bg-green-100 text-white"
           title="Editar"
         >
           ✏️

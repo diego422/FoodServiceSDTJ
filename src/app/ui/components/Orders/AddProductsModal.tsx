@@ -85,7 +85,7 @@ export default function AddProductsModal({
   return (
     <>
       <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-        <div className="bg-white p-6 rounded w-[90%] max-w-[1100px] max-h-[90vh]">
+        <div className="bg-white p-6 rounded w-[90%] max-w-[1100px] max-h-[90vh] flex flex-col">
           <h2 className="text-lg font-bold mb-4">Añadir Productos</h2>
 
           <input
@@ -109,7 +109,17 @@ export default function AddProductsModal({
             ))}
           </select>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 max-h-[500px] overflow-y-auto">
+          <div className="
+            grid 
+            grid-cols-1 
+            sm:grid-cols-2 
+            md:grid-cols-3 
+            lg:grid-cols-4 
+            xl:grid-cols-5 
+            gap-4 
+            overflow-y-auto 
+            flex-grow
+          ">
             {filteredProducts.map((p) => (
               <div
                 key={p.id}
@@ -146,7 +156,7 @@ export default function AddProductsModal({
 
           <button
             onClick={onClose}
-            className="mt-4 bg-gray-400 text-white px-4 py-2 rounded w-full"
+            className="mt-4 bg-gray-400 text-white px-4 py-2 rounded w-full shrink-0"
           >
             Cerrar
           </button>
