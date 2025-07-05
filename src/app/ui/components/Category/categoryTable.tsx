@@ -119,6 +119,7 @@ const router = useRouter();
                             onChange={(e) => setNewName(e.target.value)}
                             className="w-full border border-gray-300 p-2 rounded mb-4"
                             placeholder="Nombre de la categoría"
+                            required
                         />
                         <div className="flex justify-end gap-2">
                             <button

@@ -11,6 +11,7 @@
 import { useState, useTransition } from "react";
 import { updateIngrediente, inactivateIngredient } from "@/lib/actions";
 import { useRouter } from "next/navigation";
+import { toast } from 'react-toastify';
 
 type Ingrediente = {
   codigoIngrediente: number;
@@ -67,6 +68,16 @@ export default function IngredienteTable({ data, unidades }: Props) {
       if (isNaN(cantidadNum) || cantidadNum < 0) {
     alert("La cantidad no puede ser negativa.");
     return;
+  }
+
+  if (newName == ""){
+    alert("El nombre no puede estar vacio.");
+    return
+  }
+
+  if (!newUnidad.trim()) {
+    alert("Se debe elegir una nueva unidad de medida");
+    return
   }
 
     startTransition(async () => {
@@ -155,6 +166,7 @@ export default function IngredienteTable({ data, unidades }: Props) {
               onChange={(e) => setNewName(e.target.value)}
               className="w-full border border-gray-300 p-2 rounded mb-4"
               placeholder="Nombre del ingrediente"
+              required
             />
 
             <label className="block text-sm font-semibold mb-1">

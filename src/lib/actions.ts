@@ -655,6 +655,8 @@ export async function insertOrder(data: {
         @C_OrderType = ${data.tipoOrden}
     `;
 
+
+
     const newOrder = await prisma.order.findFirst({
       where: { D_NameClient: data.nombreCliente },
       orderBy: { C_Order: "desc" },
@@ -718,20 +720,27 @@ export async function insertOrder(data: {
                 IsUsed: isUsed,
               },
             });
+
+
           }
         }
       }
     }
 
-    return { success: true, orderId: newOrder.C_Order };
+    // redirect("/dashboard/pedidos/inicio");
+    // return redirect("/dashboard/pedidos/inicio?success=" + encodeURIComponent("Pedido creado correctamente"));
+    return { success: true, message: "Pedido creado correctamente" };
+
   } catch (error) {
     console.error("Error al insertar orden:", error);
-    return {
-      success: false,
-      error: (error as Error).message || "Error desconocido",
-    };
+
+    redirect(
+      "/dashboard/pedidos/inicio?error=" +
+      encodeURIComponent("Error al insertar el pedido.")
+    );
   }
 }
+
 
 /**
  * Fetches all ingredients assigned to a specific product.
@@ -932,18 +941,20 @@ export async function updateOrder(orderId: number, data: {
       }
     }
 
-    return { success: true };
+    // redirect("/dashboard/pedidos/inicio?success=" + encodeURIComponent("Pedido actualizado correctamente"));
+    // redirect("/dashboard/pedidos/inicio");
+    return { success: true, message: "Pedido creado correctamente" };
   } catch (error) {
     console.error("Error al actualizar orden:", error);
-    return { success: false, error: "No se pudo actualizar la orden" };
+    redirect(
+      "/dashboard/pedidos/inicio?error=" +
+      encodeURIComponent("Error al actualizar el pedido.")
+    );
   }
 }
 
 /**
  * Inactivates an existing order.
- *
- * 
- *   
  *
  * @param codigoOrder - The order ID.
  * @returns success indicator.

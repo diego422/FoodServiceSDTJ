@@ -102,10 +102,10 @@ export default function EditOrderPage() {
         return prev.map((p) =>
           p.id === product.id
             ? {
-                ...p,
-                quantity: p.quantity + quantity,
-                ingredientes: ingredientes ?? p.ingredientes,
-              }
+              ...p,
+              quantity: p.quantity + quantity,
+              ingredientes: ingredientes ?? p.ingredientes,
+            }
             : p
         );
       } else {
@@ -138,6 +138,21 @@ export default function EditOrderPage() {
   };
 
   const handleSubmit = async () => {
+    if (nombreCliente == "") {
+      alert("Debe escribir un nombre valido.");
+      return;
+    }
+
+    if (!metodoPago.trim()) {
+      alert("Debe asignar un metodo de pago valido.");
+      return;
+    }
+
+    if (!tipoOrden.trim()) {
+      alert("Debe asignar un tipo de pedido valido.");
+      return;
+    }
+
     const response = await updateOrder(Number(id), {
       nombreCliente,
       metodoPago: Number(metodoPago),
@@ -165,7 +180,7 @@ export default function EditOrderPage() {
     if (response.success) {
       alert("Orden marcada como Finalizada");
       setEstado("3");
-       router.push("/dashboard/pedidos/inicio");
+      router.push("/dashboard/pedidos/inicio");
     } else {
       alert("Error: " + response.error);
     }

@@ -3,11 +3,15 @@ import Link from "next/link";
 import Pagination from "@/app/ui/components/pagination";
 import OrderTable, { Pedido } from "@/app/ui/components/Orders/orderTable";
 import SearchProducts from "@/app/ui/components/searchProducts";
+import MessageNotification from "@/app/ui/components/messageNotification";
+
 
 type Props = {
   searchParams?: {
     query?: string;
     page?: string;
+    error?: string;
+    success?: string;
   };
 };
 
@@ -31,6 +35,8 @@ type Props = {
  */
 export default async function PedidosInicioPage({ searchParams }: Props) {
   const query = searchParams?.query || "";
+  const error = searchParams?.error || "";
+  const success = searchParams?.success || "";
   const currentPage = Number(searchParams?.page) || 1;
   const pageSize = 5;
 
@@ -84,6 +90,8 @@ export default async function PedidosInicioPage({ searchParams }: Props) {
 
   return (
     <div className="p-6">
+      {error && <MessageNotification type="error" message={decodeURIComponent(error)} />}
+      {success && <MessageNotification type="success" message={decodeURIComponent(success)} />}
       <h1 className="text-3xl font-bold mb-6 text-foreground">Pedidos</h1>
 
       <div className="flex justify-between mb-6">
